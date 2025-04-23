@@ -4,8 +4,14 @@ export interface Product {
   name: string
   slug: string
   price: number
-  originalPrice?: number
-  discount?: number
+  image: string
+}
+
+export interface ProductDetail {
+  id: string
+  name: string
+  slug: string
+  price: number
   images: string[]
   categoryId: string
   categoryName: string
@@ -14,14 +20,19 @@ export interface Product {
   reviewCount: number
   isFeatured: boolean
   isInStock: boolean
-  weight: number
-  origin: string
   shortDescription: string
   description: string
-  ingredients?: string[]
-  usage?: string
-  storage?: string
   reviews?: ProductReview[]
+  variants: ProductVariant[]
+}
+
+export interface ProductVariant {
+  id: string
+  name: string
+  price: number
+  weight: number
+  unit: string
+  isInStock: boolean
 }
 
 export interface ProductReview {

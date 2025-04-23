@@ -3,7 +3,7 @@
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 // import { useDispatch } from 'react-redux'
-import { FaStar, FaCartPlus } from 'react-icons/fa'
+import { FaCartPlus } from 'react-icons/fa'
 // import { addToCart } from '../../features/cart/cartSlice'
 import type { Product } from '../../types/product'
 import { formatCurrency } from '../../utils/format'
@@ -28,7 +28,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
   //   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-105">
+    <div className="overflow-hidden rounded-lg bg-white pb-5 shadow-md transition-transform hover:scale-105">
       <Link to={`/san-pham/chi-tiet/${product.id}`}>
         <div className="h-48 overflow-hidden">
           <img
@@ -43,19 +43,6 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
         <Link to={`/san-pham/chi-tiet/${product.id}`}>
           <h3 className="hover:text-primary mb-1 truncate text-lg font-semibold">{product.name}</h3>
         </Link>
-
-        <div className="mb-2 flex items-center">
-          <div className="text-yellow flex">
-            {[...Array(5)].map((_, i) => (
-              <FaStar
-                key={i}
-                className={i < Math.floor(product.rating) ? 'text-yellow' : 'text-gray-300'}
-                size={14}
-              />
-            ))}
-          </div>
-          <span className="ml-1 text-xs text-gray-500">({product.reviewCount})</span>
-        </div>
 
         <div className="flex items-center justify-between">
           <span className="text-primary font-bold">{formatCurrency(product.price)}</span>

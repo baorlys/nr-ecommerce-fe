@@ -16,9 +16,9 @@ export const fetchProductsApi = async (params: ProductFilterParams) => {
     if (params.search) {
       const searchTerm = params.search.toLowerCase()
       filteredProducts = filteredProducts.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm) ||
-          product.description.toLowerCase().includes(searchTerm),
+        (product) => product.name.toLowerCase().includes(searchTerm),
+        // ||
+        //   product.description.toLowerCase().includes(searchTerm),
       )
     }
 
@@ -30,13 +30,6 @@ export const fetchProductsApi = async (params: ProductFilterParams) => {
       )
     }
 
-    // Apply rating filter
-    if (params.rating !== undefined) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.rating >= (params.rating ?? 0),
-      )
-    }
-
     // Apply sorting
     if (params.sortBy) {
       switch (params.sortBy) {
@@ -45,9 +38,6 @@ export const fetchProductsApi = async (params: ProductFilterParams) => {
           break
         case 'price-desc':
           filteredProducts.sort((a, b) => b.price - a.price)
-          break
-        case 'rating':
-          filteredProducts.sort((a, b) => b.rating - a.rating)
           break
         case 'newest':
         default:
@@ -90,7 +80,8 @@ export const fetchProductsByCategoryApi = async (categoryId: string) => {
     // return response.data;
 
     // Trong môi trường development, sử dụng mock data
-    const filteredProducts = products.filter((p) => p.categorySlug === categoryId)
+    // const filteredProducts = products.filter((p) => p.categorySlug === categoryId)
+    const filteredProducts = products
 
     return filteredProducts
   } catch (error) {
@@ -106,7 +97,8 @@ export const fetchFeaturedProductsApi = async () => {
     // return response.data;
 
     // Trong môi trường development, sử dụng mock data
-    const featuredProducts = products.filter((p) => p.isFeatured)
+    // const featuredProducts = products.filter((p) => p.isFeatured)
+    const featuredProducts = products
 
     return featuredProducts
   } catch (error) {

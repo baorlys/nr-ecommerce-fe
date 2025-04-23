@@ -3,12 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FaStar, FaCartPlus, FaMinus, FaPlus, FaHeart } from 'react-icons/fa'
+import { FaStar, FaCartPlus, FaMinus, FaPlus } from 'react-icons/fa'
 import Button from '../components/common/Button'
 import { fetchProductById } from '../store/productsSlice'
-// import { addToCart } from '../features/cart/cartSlice'
+// import { addToCart } from '../store/cartSlice'
 import type { RootState, AppDispatch } from '../store'
 import { formatCurrency } from '../utils/format'
+import { ProductVariant } from '../types/product'
+import Review from '../components/ui/Review'
+import ShippingInfo from '../components/ui/ShippingInfo'
 
 const ProductDetailPage = () => {
   const { productId } = useParams()
@@ -19,6 +22,9 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
   const [activeImage, setActiveImage] = useState(0)
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    product?.variants.find((v) => v.isInStock) || null,
+  ) // Selected variant state
 
   useEffect(() => {
     if (productId) {
@@ -31,6 +37,9 @@ const ProductDetailPage = () => {
     if (value >= 1) {
       setQuantity(value)
     }
+  }
+  const handleVariantChange = (variant: ProductVariant) => {
+    setSelectedVariant(variant)
   }
 
   // const handleAddToCart = () => {
@@ -68,12 +77,7 @@ const ProductDetailPage = () => {
   }
 
   // Placeholder images for development
-  const placeholderImages = [
-    'https://placehold.co/600x600/E53935/FFFFFF?text=Sản+phẩm+1',
-    'https://placehold.co/600x600/FBC02D/212121?text=Sản+phẩm+2',
-    'https://placehold.co/600x600/FF7043/FFFFFF?text=Sản+phẩm+3',
-    'https://placehold.co/600x600/BA68C8/FFFFFF?text=Sản+phẩm+4',
-  ]
+  const placeholderImages = product.images
 
   return (
     <div className="container-custom py-8">
@@ -98,7 +102,7 @@ const ProductDetailPage = () => {
             <img
               src={placeholderImages[activeImage % placeholderImages.length] || '/placeholder.svg'}
               alt={product.name}
-              className="h-auto w-full object-cover"
+              className="h-100 w-full object-cover"
             />
           </div>
 
@@ -114,7 +118,7 @@ const ProductDetailPage = () => {
                 <img
                   src={placeholderImages[index % placeholderImages.length] || '/placeholder.svg'}
                   alt={`${product.name} - ${index + 1}`}
-                  className="h-auto w-full object-cover"
+                  className="h-30 w-full object-cover"
                 />
               </div>
             ))}
@@ -138,12 +142,38 @@ const ProductDetailPage = () => {
           </div>
 
           <div className="text-primary mb-4 text-2xl font-bold">
-            {formatCurrency(product.price)}
+            {formatCurrency(selectedVariant?.price || product.price)}
           </div>
 
           <div className="mb-6">
             <p className="text-gray-700">{product.shortDescription}</p>
           </div>
+          {/* Variant Selection */}
+          {product.variants && (
+            <div className="mb-6">
+              <label className="mb-2 block font-medium text-gray-700">Chọn phiên bản</label>
+              <div className="flex flex-wrap gap-4">
+                {product.variants.map((variant) => (
+                  <button
+                    key={variant.id}
+                    disabled={!variant.isInStock}
+                    onClick={() => handleVariantChange(variant)}
+                    className={`rounded-md border-2 px-4 py-2 ${
+                      selectedVariant?.id === variant.id
+                        ? 'border-primary text-primary'
+                        : 'border-gray-300 text-gray-700'
+                    } ${
+                      !variant.isInStock
+                        ? 'cursor-not-allowed opacity-50'
+                        : 'hover:border-primary hover:text-primary'
+                    }`}
+                  >
+                    {variant.weight} {variant.unit}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quantity Selector */}
           <div className="mb-6">
@@ -157,11 +187,10 @@ const ProductDetailPage = () => {
                 <FaMinus />
               </button>
               <input
-                type="number"
-                min="1"
+                type="text"
                 value={quantity}
                 onChange={(e) => handleQuantityChange(Number.parseInt(e.target.value) || 1)}
-                className="w-16 border-y border-gray-300 px-3 py-2 text-center focus:outline-none"
+                className="w-20 border-y border-gray-300 px-3 py-2 text-center focus:outline-none"
               />
               <button
                 onClick={() => handleQuantityChange(quantity + 1)}
@@ -182,9 +211,6 @@ const ProductDetailPage = () => {
             >
               <FaCartPlus /> Thêm vào giỏ hàng
             </Button>
-            <Button variant="outline" size="lg" className="flex items-center justify-center gap-2">
-              <FaHeart /> Yêu thích
-            </Button>
           </div>
 
           {/* Product Meta */}
@@ -198,14 +224,7 @@ const ProductDetailPage = () => {
                 {product.categoryName}
               </a>
             </div>
-            <div className="mb-2 flex">
-              <span className="w-32 font-medium">Khối lượng:</span>
-              <span>{product.weight}g</span>
-            </div>
-            <div className="mb-2 flex">
-              <span className="w-32 font-medium">Xuất xứ:</span>
-              <span>{product.origin}</span>
-            </div>
+
             <div className="flex">
               <span className="w-32 font-medium">Chia sẻ:</span>
               <div className="flex gap-2">
@@ -295,118 +314,12 @@ const ProductDetailPage = () => {
             <div className="prose max-w-none">
               <h3 className="mb-4 text-xl font-semibold">Thông tin sản phẩm</h3>
               <div dangerouslySetInnerHTML={{ __html: product.description }} />
-
-              <h3 className="mt-8 mb-4 text-xl font-semibold">Thành phần</h3>
-              <ul className="list-disc space-y-2 pl-5">
-                {product.ingredients?.map((ingredient, index) => <li key={index}>{ingredient}</li>)}
-              </ul>
-
-              <h3 className="mt-8 mb-4 text-xl font-semibold">Hướng dẫn sử dụng</h3>
-              <p>{product.usage}</p>
-
-              <h3 className="mt-8 mb-4 text-xl font-semibold">Bảo quản</h3>
-              <p>{product.storage}</p>
             </div>
           )}
 
-          {activeTab === 'reviews' && (
-            <div>
-              <div className="mb-6 flex items-center">
-                <div className="flex-1">
-                  <h3 className="mb-2 text-xl font-semibold">Đánh giá khách hàng</h3>
-                  <div className="flex items-center">
-                    <div className="mr-4 text-5xl font-bold">{product.rating.toFixed(1)}</div>
-                    <div>
-                      <div className="text-yellow mb-1 flex">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={
-                              i < Math.floor(product.rating) ? 'text-yellow' : 'text-gray-300'
-                            }
-                            size={20}
-                          />
-                        ))}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Dựa trên {product.reviewCount} đánh giá
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <Button variant="primary">Viết đánh giá</Button>
-                </div>
-              </div>
+          {activeTab === 'reviews' && <Review product={product} />}
 
-              <div className="space-y-6">
-                {product.reviews?.map((review, index) => (
-                  <div key={index} className="border-b border-gray-200 pb-6">
-                    <div className="mb-2 flex justify-between">
-                      <div className="font-semibold">{review.name}</div>
-                      <div className="text-sm text-gray-500">{review.date}</div>
-                    </div>
-                    <div className="text-yellow mb-2 flex">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar
-                          key={i}
-                          className={i < review.rating ? 'text-yellow' : 'text-gray-300'}
-                          size={14}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-gray-700">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'shipping' && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="mb-4 text-xl font-semibold">Thông tin vận chuyển</h3>
-                <p className="mb-4">
-                  Chúng tôi giao hàng trên toàn quốc với các hình thức vận chuyển sau:
-                </p>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>Giao hàng tiêu chuẩn: 2-3 ngày làm việc</li>
-                  <li>Giao hàng nhanh: 1-2 ngày làm việc</li>
-                  <li>Giao hàng hỏa tốc (nội thành): 2-3 giờ</li>
-                </ul>
-                <p className="mt-4">
-                  Phí vận chuyển sẽ được tính dựa trên khoảng cách và phương thức vận chuyển bạn lựa
-                  chọn.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="mb-4 text-xl font-semibold">Phương thức thanh toán</h3>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>Thanh toán khi nhận hàng (COD)</li>
-                  <li>Chuyển khoản ngân hàng</li>
-                  <li>Ví điện tử (MoMo, ZaloPay, VNPay)</li>
-                  <li>Thẻ tín dụng/ghi nợ</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="mb-4 text-xl font-semibold">Chính sách đổi trả</h3>
-                <p className="mb-4">
-                  Quý khách có thể đổi trả sản phẩm trong vòng 7 ngày kể từ ngày nhận hàng nếu:
-                </p>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>Sản phẩm bị lỗi do nhà sản xuất</li>
-                  <li>Sản phẩm không đúng với mô tả</li>
-                  <li>Sản phẩm bị hư hỏng trong quá trình vận chuyển</li>
-                </ul>
-                <p className="mt-4">
-                  Lưu ý: Sản phẩm đổi trả phải còn nguyên vẹn, chưa qua sử dụng và còn đầy đủ bao
-                  bì, nhãn mác.
-                </p>
-              </div>
-            </div>
-          )}
+          {activeTab === 'shipping' && <ShippingInfo />}
         </div>
       </div>
     </div>

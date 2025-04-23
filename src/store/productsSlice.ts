@@ -1,17 +1,16 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
-import type { Product, ProductFilterParams } from '../types/product'
+import type { Product, ProductDetail, ProductFilterParams } from '../types/product'
 import {
   fetchProductsApi,
   fetchProductByIdApi,
   fetchProductsByCategoryApi,
-  fetchFeaturedProductsApi
+  fetchFeaturedProductsApi,
 } from '../services/productService'
 
 interface ProductsState {
   products: Product[]
   featuredProducts: Product[]
-  relatedProducts: Product[]
-  product: Product | null
+  product: ProductDetail | null
   loading: boolean
   error: string | null
 }
@@ -19,7 +18,6 @@ interface ProductsState {
 const initialState: ProductsState = {
   products: [],
   featuredProducts: [],
-  relatedProducts: [],
   product: null,
   loading: false,
   error: null,
@@ -104,7 +102,7 @@ const productsSlice = createSlice({
         state.loading = true
         state.error = null
       })
-      .addCase(fetchProductById.fulfilled, (state, action: PayloadAction<Product>) => {
+      .addCase(fetchProductById.fulfilled, (state, action: PayloadAction<ProductDetail>) => {
         state.loading = false
         state.product = action.payload
       })

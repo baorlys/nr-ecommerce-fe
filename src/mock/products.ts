@@ -1,16 +1,14 @@
-import type { Product } from '../types/product'
+import type { ProductDetail } from '../types/product'
 
 // Mock data cho sản phẩm
-export const products: Product[] = [
+export const products: ProductDetail[] = [
   {
     id: '1',
     name: 'Khô gà lá chanh',
     slug: 'kho-ga-la-chanh',
     price: 75000,
-    originalPrice: 90000,
-    discount: 17,
     images: [
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Khô+gà+lá+chanh',
+      'https://moderncook.com.vn/recipes/wp-content/uploads/2019/10/Kho%CC%82-ga%CC%80-la%CC%81-chanh-Large.jpeg',
       'https://placehold.co/600x600/FBC02D/212121?text=Khô+gà+lá+chanh+2',
       'https://placehold.co/600x600/FF7043/FFFFFF?text=Khô+gà+lá+chanh+3',
       'https://placehold.co/600x600/BA68C8/FFFFFF?text=Khô+gà+lá+chanh+4',
@@ -22,16 +20,10 @@ export const products: Product[] = [
     reviewCount: 120,
     isFeatured: true,
     isInStock: true,
-    weight: 200,
-    origin: 'Việt Nam',
     shortDescription:
       'Khô gà lá chanh thơm ngon, vị cay nhẹ, đậm đà hương vị đặc trưng của miền Tây Nam Bộ.',
     description:
       '<p>Khô gà lá chanh là món ăn vặt được yêu thích với hương vị đặc trưng của thịt gà kết hợp với lá chanh thơm nồng. Sản phẩm được chế biến từ thịt gà tươi ngon, tẩm ướp gia vị đặc biệt và sấy khô đến độ giòn vừa phải.</p><p>Khô gà có vị mặn ngọt vừa phải, cay nhẹ và thơm mùi lá chanh đặc trưng, kích thích vị giác. Đây là món ăn vặt lý tưởng cho các buổi xem phim, đi picnic hoặc nhâm nhi cùng bạn bè.</p>',
-    ingredients: ['Thịt gà', 'Lá chanh', 'Ớt', 'Tỏi', 'Đường', 'Muối', 'Gia vị'],
-    usage: 'Có thể ăn trực tiếp hoặc chế biến kèm các món salad, cơm, mì.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong tủ lạnh và sử dụng trong vòng 1 tháng.',
     reviews: [
       {
         id: '1',
@@ -55,14 +47,30 @@ export const products: Product[] = [
         comment: 'Sản phẩm chất lượng, ăn rất ngon. Mình đã mua nhiều lần rồi.',
       },
     ],
+    variants: [
+      {
+        id: '1',
+        name: 'Khô gà lá chanh gói nhỏ',
+        price: 75000,
+        weight: 200,
+        unit: 'gram',
+        isInStock: false,
+      },
+      {
+        id: '2',
+        name: 'Khô gà lá chanh gói lớn',
+        price: 140000,
+        weight: 400,
+        unit: 'gram',
+        isInStock: true,
+      },
+    ],
   },
   {
     id: '2',
     name: 'Khô gà cay',
     slug: 'kho-ga-cay',
     price: 80000,
-    originalPrice: 95000,
-    discount: 16,
     images: [
       'https://placehold.co/600x600/FF7043/FFFFFF?text=Khô+gà+cay',
       'https://placehold.co/600x600/E53935/FFFFFF?text=Khô+gà+cay+2',
@@ -75,15 +83,9 @@ export const products: Product[] = [
     reviewCount: 85,
     isFeatured: true,
     isInStock: true,
-    weight: 200,
-    origin: 'Việt Nam',
     shortDescription: 'Khô gà cay đậm đà, thơm ngon với vị cay nồng đặc trưng, kích thích vị giác.',
     description:
       '<p>Khô gà cay là phiên bản cay hơn của khô gà truyền thống, phù hợp với những người yêu thích vị cay. Sản phẩm được chế biến từ thịt gà tươi ngon, tẩm ướp gia vị đặc biệt với nhiều ớt và sấy khô đến độ giòn vừa phải.</p><p>Khô gà có vị mặn ngọt vừa phải, cay nồng và thơm mùi gia vị đặc trưng. Đây là món ăn vặt lý tưởng cho các buổi xem phim, đi picnic hoặc nhâm nhi cùng bạn bè.</p>',
-    ingredients: ['Thịt gà', 'Ớt', 'Tỏi', 'Đường', 'Muối', 'Gia vị'],
-    usage: 'Có thể ăn trực tiếp hoặc chế biến kèm các món salad, cơm, mì.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong tủ lạnh và sử dụng trong vòng 1 tháng.',
     reviews: [
       {
         id: '1',
@@ -100,278 +102,24 @@ export const products: Product[] = [
         comment: 'Khô gà thơm, giòn, cay đúng vị. Giao hàng hơi chậm.',
       },
     ],
-  },
-  {
-    id: '3',
-    name: 'Khô bò miếng',
-    slug: 'kho-bo-mieng',
-    price: 120000,
-    originalPrice: 150000,
-    discount: 20,
-    images: [
-      'https://placehold.co/600x600/FBC02D/212121?text=Khô+bò+miếng',
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Khô+bò+miếng+2',
-      'https://placehold.co/600x600/FF7043/FFFFFF?text=Khô+bò+miếng+3',
-    ],
-    categoryId: '2',
-    categoryName: 'Khô bò',
-    categorySlug: 'kho-bo',
-    rating: 4.7,
-    reviewCount: 95,
-    isFeatured: true,
-    isInStock: true,
-    weight: 250,
-    origin: 'Việt Nam',
-    shortDescription:
-      'Khô bò miếng thơm ngon, dai vừa, đậm đà hương vị, thích hợp làm quà hoặc ăn vặt.',
-    description:
-      '<p>Khô bò miếng là món ăn vặt truyền thống được làm từ thịt bò tươi ngon, tẩm ướp gia vị đặc biệt và sấy khô đến độ dai vừa phải. Sản phẩm giữ nguyên hương vị tự nhiên của thịt bò kết hợp với các loại gia vị.</p><p>Khô bò có vị mặn ngọt vừa phải, thơm mùi thịt bò đặc trưng. Đây là món ăn vặt bổ dưỡng, giàu protein, thích hợp cho mọi lứa tuổi.</p>',
-    ingredients: ['Thịt bò', 'Tỏi', 'Đường', 'Muối', 'Gia vị'],
-    usage: 'Có thể ăn trực tiếp hoặc chế biến kèm các món salad, cơm, mì.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong tủ lạnh và sử dụng trong vòng 2 tháng.',
-    reviews: [
+    variants: [
       {
         id: '1',
-        name: 'Vũ Thị F',
-        rating: 5,
-        date: '20/04/2023',
-        comment: 'Khô bò dai vừa, thơm ngon. Sẽ mua lại.',
+        name: 'Khô gà cay gói nhỏ',
+        price: 80000,
+        weight: 200,
+        unit: 'gram',
+        isInStock: true,
       },
       {
         id: '2',
-        name: 'Đặng Văn G',
-        rating: 4,
-        date: '25/03/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị hơi mặn.',
+        name: 'Khô gà cay gói lớn',
+        price: 150000,
+        weight: 400,
+        unit: 'gram',
+        isInStock: true,
       },
     ],
   },
-  {
-    id: '4',
-    name: 'Khô bò sợi',
-    slug: 'kho-bo-soi',
-    price: 110000,
-    originalPrice: 130000,
-    discount: 15,
-    images: [
-      'https://placehold.co/600x600/BA68C8/FFFFFF?text=Khô+bò+sợi',
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Khô+bò+sợi+2',
-      'https://placehold.co/600x600/FBC02D/212121?text=Khô+bò+sợi+3',
-    ],
-    categoryId: '2',
-    categoryName: 'Khô bò',
-    categorySlug: 'kho-bo',
-    rating: 4.6,
-    reviewCount: 78,
-    isFeatured: true,
-    isInStock: true,
-    weight: 200,
-    origin: 'Việt Nam',
-    shortDescription:
-      'Khô bò sợi thơm ngon, dễ ăn, đậm đà hương vị, thích hợp làm quà hoặc ăn vặt.',
-    description:
-      '<p>Khô bò sợi là món ăn vặt được làm từ thịt bò tươi ngon, xé sợi nhỏ, tẩm ướp gia vị đặc biệt và sấy khô đến độ dai vừa phải. Sản phẩm giữ nguyên hương vị tự nhiên của thịt bò kết hợp với các loại gia vị.</p><p>Khô bò sợi có vị mặn ngọt vừa phải, thơm mùi thịt bò đặc trưng. Dạng sợi nhỏ dễ ăn, thích hợp cho mọi lứa tuổi.</p>',
-    ingredients: ['Thịt bò', 'Tỏi', 'Đường', 'Muối', 'Gia vị'],
-    usage: 'Có thể ăn trực tiếp hoặc chế biến kèm các món salad, cơm, mì.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong tủ lạnh và sử dụng trong vòng 2 tháng.',
-    reviews: [
-      {
-        id: '1',
-        name: 'Ngô Thị H',
-        rating: 5,
-        date: '05/04/2023',
-        comment: 'Khô bò sợi rất ngon, dễ ăn. Sẽ mua lại.',
-      },
-      {
-        id: '2',
-        name: 'Trịnh Văn I',
-        rating: 4,
-        date: '10/03/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị ngọt vừa phải.',
-      },
-    ],
-  },
-  {
-    id: '5',
-    name: 'Mực rim me',
-    slug: 'muc-rim-me',
-    price: 95000,
-    originalPrice: 115000,
-    discount: 17,
-    images: [
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Mực+rim+me',
-      'https://placehold.co/600x600/FBC02D/212121?text=Mực+rim+me+2',
-      'https://placehold.co/600x600/FF7043/FFFFFF?text=Mực+rim+me+3',
-    ],
-    categoryId: '3',
-    categoryName: 'Đồ ăn vặt',
-    categorySlug: 'do-an-vat',
-    rating: 4.5,
-    reviewCount: 65,
-    isFeatured: true,
-    isInStock: true,
-    weight: 150,
-    origin: 'Việt Nam',
-    shortDescription: 'Mực rim me chua ngọt, thơm ngon, dai giòn, kích thích vị giác.',
-    description:
-      '<p>Mực rim me là món ăn vặt được làm từ mực tươi ngon, tẩm ướp với me chua và các loại gia vị đặc biệt. Sản phẩm có vị chua ngọt đặc trưng, kết hợp với độ dai giòn của mực tạo nên hương vị hấp dẫn.</p><p>Mực rim me có vị chua ngọt vừa phải, thơm mùi me đặc trưng. Đây là món ăn vặt lý tưởng cho các buổi xem phim, đi picnic hoặc nhâm nhi cùng bạn bè.</p>',
-    ingredients: ['Mực', 'Me', 'Đường', 'Muối', 'Ớt', 'Tỏi', 'Gia vị'],
-    usage: 'Ăn trực tiếp hoặc kết hợp với đồ uống.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong tủ lạnh và sử dụng trong vòng 1 tháng.',
-    reviews: [
-      {
-        id: '1',
-        name: 'Lý Thị J',
-        rating: 5,
-        date: '15/04/2023',
-        comment: 'Mực rim me rất ngon, vị chua ngọt vừa phải. Sẽ mua lại.',
-      },
-      {
-        id: '2',
-        name: 'Đinh Văn K',
-        rating: 4,
-        date: '20/03/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị hơi chua.',
-      },
-    ],
-  },
-  {
-    id: '6',
-    name: 'Cơm cháy chà bông',
-    slug: 'com-chay-cha-bong',
-    price: 65000,
-    originalPrice: 80000,
-    discount: 19,
-    images: [
-      'https://placehold.co/600x600/FBC02D/212121?text=Cơm+cháy+chà+bông',
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Cơm+cháy+chà+bông+2',
-      'https://placehold.co/600x600/FF7043/FFFFFF?text=Cơm+cháy+chà+bông+3',
-    ],
-    categoryId: '3',
-    categoryName: 'Đồ ăn vặt',
-    categorySlug: 'do-an-vat',
-    rating: 4.4,
-    reviewCount: 55,
-    isFeatured: true,
-    isInStock: true,
-    weight: 180,
-    origin: 'Việt Nam',
-    shortDescription:
-      'Cơm cháy chà bông giòn rụm, thơm ngon, kết hợp hài hòa giữa cơm cháy và chà bông.',
-    description:
-      '<p>Cơm cháy chà bông là món ăn vặt truyền thống được làm từ cơm nếp dẻo, sấy khô đến độ giòn vừa phải, phủ lớp chà bông thơm ngon bên trên. Sản phẩm kết hợp hài hòa giữa vị giòn của cơm cháy và vị mặn ngọt của chà bông.</p><p>Cơm cháy chà bông có vị mặn ngọt vừa phải, thơm mùi gạo nếp và chà bông đặc trưng. Đây là món ăn vặt lý tưởng cho các buổi xem phim, đi picnic hoặc nhâm nhi cùng bạn bè.</p>',
-    ingredients: ['Gạo nếp', 'Chà bông', 'Đường', 'Muối', 'Dầu ăn', 'Gia vị'],
-    usage: 'Ăn trực tiếp.',
-    storage:
-      'Bảo quản nơi khô ráo, thoáng mát. Sau khi mở bao bì, nên bảo quản trong hộp kín và sử dụng trong vòng 1 tháng.',
-    reviews: [
-      {
-        id: '1',
-        name: 'Bùi Thị L',
-        rating: 5,
-        date: '25/04/2023',
-        comment: 'Cơm cháy giòn, chà bông thơm ngon. Sẽ mua lại.',
-      },
-      {
-        id: '2',
-        name: 'Hồ Văn M',
-        rating: 4,
-        date: '30/03/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị hơi mặn.',
-      },
-    ],
-  },
-  {
-    id: '7',
-    name: 'Trà sữa trân châu',
-    slug: 'tra-sua-tran-chau',
-    price: 45000,
-    originalPrice: 55000,
-    discount: 18,
-    images: [
-      'https://placehold.co/600x600/FF7043/FFFFFF?text=Trà+sữa+trân+châu',
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Trà+sữa+trân+châu+2',
-      'https://placehold.co/600x600/FBC02D/212121?text=Trà+sữa+trân+châu+3',
-    ],
-    categoryId: '4',
-    categoryName: 'Đồ uống',
-    categorySlug: 'do-uong',
-    rating: 4.6,
-    reviewCount: 85,
-    isFeatured: true,
-    isInStock: true,
-    weight: 500,
-    origin: 'Việt Nam',
-    shortDescription:
-      'Trà sữa trân châu thơm ngon, béo ngậy, kết hợp hài hòa giữa trà, sữa và trân châu.',
-    description:
-      '<p>Trà sữa trân châu là đồ uống phổ biến được làm từ trà đen, sữa và trân châu đường đen. Sản phẩm kết hợp hài hòa giữa vị đắng nhẹ của trà, vị béo của sữa và vị ngọt dai của trân châu.</p><p>Trà sữa trân châu có vị ngọt vừa phải, thơm mùi trà và sữa đặc trưng. Đây là đồ uống lý tưởng cho các buổi giải khát, gặp gỡ bạn bè hoặc thư giãn.</p>',
-    ingredients: ['Trà đen', 'Sữa', 'Trân châu đường đen', 'Đường', 'Đá'],
-    usage: 'Lắc đều trước khi uống. Có thể điều chỉnh lượng đá theo khẩu vị.',
-    storage: 'Bảo quản trong tủ lạnh và sử dụng trong ngày.',
-    reviews: [
-      {
-        id: '1',
-        name: 'Dương Thị N',
-        rating: 5,
-        date: '05/05/2023',
-        comment: 'Trà sữa thơm ngon, trân châu dai vừa. Sẽ mua lại.',
-      },
-      {
-        id: '2',
-        name: 'Phan Văn O',
-        rating: 4,
-        date: '10/04/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị hơi ngọt.',
-      },
-    ],
-  },
-  {
-    id: '8',
-    name: 'Nước ép cam tươi',
-    slug: 'nuoc-ep-cam-tuoi',
-    price: 35000,
-    originalPrice: 40000,
-    discount: 13,
-    images: [
-      'https://placehold.co/600x600/BA68C8/FFFFFF?text=Nước+ép+cam+tươi',
-      'https://placehold.co/600x600/E53935/FFFFFF?text=Nước+ép+cam+tươi+2',
-      'https://placehold.co/600x600/FBC02D/212121?text=Nước+ép+cam+tươi+3',
-    ],
-    categoryId: '4',
-    categoryName: 'Đồ uống',
-    categorySlug: 'do-uong',
-    rating: 4.7,
-    reviewCount: 70,
-    isFeatured: true,
-    isInStock: true,
-    weight: 500,
-    origin: 'Việt Nam',
-    shortDescription:
-      'Nước ép cam tươi, ngọt thanh, giàu vitamin C, thích hợp giải khát và bổ sung dưỡng chất.',
-    description:
-      '<p>Nước ép cam tươi là đồ uống được làm từ cam tươi ép lấy nước, không thêm đường hoặc chất bảo quản. Sản phẩm giữ nguyên hương vị tự nhiên và dưỡng chất của cam.</p><p>Nước ép cam có vị chua ngọt tự nhiên, thơm mùi cam đặc trưng. Đây là đồ uống lý tưởng cho các buổi giải khát, bổ sung vitamin C và tăng cường sức đề kháng.</p>',
-    ingredients: ['Cam tươi', 'Đá (tùy chọn)'],
-    usage: 'Lắc đều trước khi uống. Có thể điều chỉnh lượng đá theo khẩu vị.',
-    storage: 'Bảo quản trong tủ lạnh và sử dụng trong ngày.',
-    reviews: [
-      {
-        id: '1',
-        name: 'Mai Thị P',
-        rating: 5,
-        date: '15/05/2023',
-        comment: 'Nước cam tươi ngon, vị chua ngọt vừa phải. Sẽ mua lại.',
-      },
-      {
-        id: '2',
-        name: 'Lâm Văn Q',
-        rating: 5,
-        date: '20/04/2023',
-        comment: 'Chất lượng tốt, đóng gói cẩn thận. Vị rất tự nhiên.',
-      },
-    ],
-  },
+  // Add more products with the same structure...
 ]
