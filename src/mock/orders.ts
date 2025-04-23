@@ -1,0 +1,83 @@
+import type { Order } from '../types/order'
+
+// Mock data cho đơn hàng
+export const orders: Order[] = [
+  {
+    id: '1',
+    userId: '1',
+    items: [
+      {
+        id: '1',
+        name: 'Khô gà lá chanh',
+        price: 75000,
+        image: 'https://placehold.co/600x600/E53935/FFFFFF?text=Khô+gà+lá+chanh',
+        quantity: 2,
+      },
+      {
+        id: '3',
+        name: 'Khô bò miếng',
+        price: 120000,
+        image: 'https://placehold.co/600x600/FBC02D/212121?text=Khô+bò+miếng',
+        quantity: 1,
+      },
+    ],
+    shippingAddress: {
+      fullName: 'Nguyễn Văn A',
+      phone: '0123456789',
+      email: 'user@example.com',
+      address: '123 Đường Lê Lợi',
+      city: 'hochiminh',
+      district: 'district1',
+      ward: 'ward1',
+    },
+    paymentMethod: 'cod',
+    paymentStatus: 'pending',
+    shippingMethod: 'standard',
+    shippingFee: 30000,
+    subtotal: 270000,
+    total: 300000,
+    status: 'processing',
+    notes: 'Giao hàng trong giờ hành chính',
+    createdAt: '2023-05-15T09:30:00Z',
+    updatedAt: '2023-05-15T09:30:00Z',
+  },
+  {
+    id: '2',
+    userId: '1',
+    items: [
+      {
+        id: '5',
+        name: 'Mực rim me',
+        price: 95000,
+        image: 'https://placehold.co/600x600/E53935/FFFFFF?text=Mực+rim+me',
+        quantity: 1,
+      },
+      {
+        id: '7',
+        name: 'Trà sữa trân châu',
+        price: 45000,
+        image: 'https://placehold.co/600x600/FF7043/FFFFFF?text=Trà+sữa+trân+châu',
+        quantity: 2,
+      },
+    ],
+    shippingAddress: {
+      fullName: 'Nguyễn Văn A',
+      phone: '0123456789',
+      email: 'user@example.com',
+      address: '123 Đường Lê Lợi',
+      city: 'hochiminh',
+      district: 'district1',
+      ward: 'ward1',
+    },
+    paymentMethod: 'bank',
+    paymentStatus: 'paid',
+    shippingMethod: 'express',
+    shippingFee: 50000,
+    subtotal: 185000,
+    total: 235000,
+    status: 'delivered',
+    notes: '',
+    createdAt: '2023-04-20T14:45:00Z',
+    updatedAt: '2023-04-22T10:15:00Z',
+  },
+]

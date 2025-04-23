@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// Layouts
+import MainLayout from './components/layout/MainLayout'
 
+// Pages
+import HomePage from './pages/HomePage'
+import ProductsPage from './pages/ProductsPage'
+import ProductDetailPage from './pages/ProductDetailPage'
+import CartPage from './pages/CartPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import CheckoutPage from './pages/CheckoutPage'
+import NotFoundPage from './pages/NotFoundPage'
+
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="san-pham" element={<ProductsPage />} />
+          <Route path="san-pham/:categoryId" element={<ProductsPage />} />
+          <Route path="san-pham/chi-tiet/:productId" element={<ProductDetailPage />} />
+          <Route path="gio-hang" element={<CartPage />} />
+          <Route path="thanh-toan" element={<CheckoutPage />} />
+          <Route path="dang-nhap" element={<LoginPage />} />
+          <Route path="dang-ky" element={<RegisterPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </Router>
   )
 }
-
-export default App
