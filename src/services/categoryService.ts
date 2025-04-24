@@ -1,14 +1,11 @@
 import { categories } from '../mock'
+import api from './api'
 
 // API functions
 export const fetchCategoriesApi = async () => {
   try {
-    // Trong môi trường thực tế, sẽ gọi API
-    // const response = await api.get('/categories');
-    // return response.data;
-
-    // Trong môi trường development, sử dụng mock data
-    return categories
+    const response = await api.get('/categories')
+    return response.data
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch categories'
     throw new Error(errorMessage)

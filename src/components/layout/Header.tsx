@@ -5,7 +5,7 @@ import type React from 'react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { FaShoppingCart, FaSearch, FaBars } from 'react-icons/fa'
+import { FaShoppingCart, FaSearch, FaBars, FaUser } from 'react-icons/fa'
 import type { RootState, AppDispatch } from '../../store'
 import { fetchCategories } from '../../store/categoriesSlice'
 import Logo from '../common/Logo'
@@ -19,7 +19,7 @@ const Header = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
 
   // const { cartItems } = useSelector((state: RootState) => state.cart)
-  // const { user } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
   const { categories, loading: categoriesLoading } = useSelector(
     (state: RootState) => state.categories,
   )
@@ -38,8 +38,7 @@ const Header = () => {
     }
   }
 
-  // Lọc ra chỉ các danh mục cha (không có parentId)
-  const mainCategories = categories.filter((category) => !category.parentId)
+  const mainCategories = categories
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -135,9 +134,11 @@ const Header = () => {
               )} */}
             </Link>
 
-            {/* <Link to={user ? '/tai-khoan' : '/dang-nhap'} className="p-2">
-              <FaUser size={20} className="text-textColor hover:text-primary" />
-            </Link> */}
+            {
+              <Link to={user ? '/tai-khoan' : '/dang-nhap'} className="p-2">
+                <FaUser size={20} className="text-textColor hover:text-primary" />
+              </Link>
+            }
           </div>
         </div>
 
@@ -218,14 +219,16 @@ const Header = () => {
                 </Link>
               </div>
 
-              {/* <Link
-                to={user ? '/tai-khoan' : '/dang-nhap'}
-                className="text-textColor hover:text-primary flex items-center space-x-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <FaUser size={20} />
-                <span>{user ? 'Tài khoản' : 'Đăng nhập'}</span>
-              </Link> */}
+              {
+                <Link
+                  to={user ? '/tai-khoan' : '/dang-nhap'}
+                  className="text-textColor hover:text-primary flex items-center space-x-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FaUser size={20} />
+                  <span>{user ? 'Tài khoản' : 'Đăng nhập'}</span>
+                </Link>
+              }
             </div>
           </div>
         )}

@@ -12,7 +12,7 @@ const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
       <div className="group relative overflow-hidden rounded-lg">
         <div className="h-40 overflow-hidden">
           <img
-            src={category.image || '/placeholder.svg'}
+            src={category.imageUrl || '/placeholder.svg'}
             alt={category.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

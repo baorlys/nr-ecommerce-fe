@@ -3,7 +3,6 @@ export interface Category {
   name: string
   slug: string
   description: string
-  image: string
-  parentId: string | null // Use string | null to allow for no parent category
+  imageUrl: string
   subCategories?: Category[] // Optional property for subcategories
 }
