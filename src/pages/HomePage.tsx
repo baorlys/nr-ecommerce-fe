@@ -23,8 +23,13 @@ const HomePage = () => {
   )
 
   useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(fetchCategories())
+    }
+  }, [dispatch, categories.length])
+
+  useEffect(() => {
     dispatch(fetchFeaturedProducts())
-    dispatch(fetchCategories())
   }, [dispatch])
 
   return (

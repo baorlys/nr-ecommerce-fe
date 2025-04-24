@@ -22,16 +22,15 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
   const [activeImage, setActiveImage] = useState(0)
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    product?.variants.find((v) => v.isInStock) || null,
-  ) // Selected variant state
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
 
   useEffect(() => {
     if (productId) {
       dispatch(fetchProductById(productId))
       window.scrollTo(0, 0)
+      setSelectedVariant(product?.variants.find((v) => v.isInStock) || null)
     }
-  }, [dispatch, productId])
+  }, [dispatch, productId, product?.variants])
 
   const handleQuantityChange = (value: number) => {
     if (value >= 1) {

@@ -26,10 +26,11 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
   //       }),
   //     )
   //   }
+  const linkToDetail = `/san-pham/chi-tiet/${product.id}`
 
   return (
     <div className="overflow-hidden rounded-lg bg-white pb-5 shadow-md transition-transform hover:scale-105">
-      <Link to={`/san-pham/chi-tiet/${product.id}`}>
+      <Link to={linkToDetail}>
         <div className="h-48 overflow-hidden">
           <img
             src={product.image || '/placeholder.svg'}
@@ -40,7 +41,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
       </Link>
 
       <div className="p-4">
-        <Link to={`/san-pham/chi-tiet/${product.id}`}>
+        <Link to={linkToDetail}>
           <h3 className="hover:text-primary mb-1 truncate text-lg font-semibold">{product.name}</h3>
         </Link>
 

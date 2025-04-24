@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit"
-import { toast } from "react-toastify"
-import type { AuthState, LoginRequest, RegisterRequest, User, AuthResponse } from "../../types/user"
-import { loginApi, registerApi, logoutApi, getCurrentUserApi } from "../../services/authService"
-import { getCookie } from "../../utils/cookies"
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+import { toast } from 'react-toastify'
+import type { AuthState, LoginRequest, RegisterRequest, User } from '../types/user'
+import { loginApi, registerApi, logoutApi, getCurrentUserApi } from '../services/authService'
+import { getCookie } from '../utils/cookies'
 
 // Khởi tạo state từ cookies nếu có
-const accessToken = getCookie("accessToken")
-const refreshToken = getCookie("refreshToken")
+const accessToken = getCookie('accessToken')
+const refreshToken = getCookie('refreshToken')
 
 const initialState: AuthState = {
   user: null,
@@ -18,62 +18,65 @@ const initialState: AuthState = {
 }
 
 // Thunk actions
-export const login = createAsyncThunk<AuthResponse, LoginRequest, { rejectValue: string }>(
-  "auth/login",
+export const login = createAsyncThunk<User, LoginRequest, { rejectValue: string }>(
+  'auth/login',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await loginApi(userData)
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại"
+      const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại'
       return rejectWithValue(errorMessage)
     }
   },
 )
 
 export const register = createAsyncThunk<User, RegisterRequest, { rejectValue: string }>(
-  "auth/register",
+  'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await registerApi(userData)
+
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Đăng ký thất bại"
-      return rejectWithValue(errorMessage)
+      return rejectWithValue(String(error.message))
     }
   },
 )
 
 export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
-  "auth/logout",
+  'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
       await logoutApi()
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Đăng xuất thất bại"
+      const errorMessage = error instanceof Error ? error.message : 'Đăng xuất thất bại'
       return rejectWithValue(errorMessage)
     }
   },
 )
 
 export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: string }>(
-  "auth/getCurrentUser",
+  'auth/getCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getCurrentUserApi()
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Lấy thông tin user thất bại"
+      const errorMessage = error instanceof Error ? error.message : 'Lấy thông tin user thất bại'
       return rejectWithValue(errorMessage)
     }
   },
 )
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
+    setCredentials: (
+      state,
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
+    ) => {
       state.accessToken = action.payload.accessToken
       state.refreshToken = action.payload.refreshToken
       state.isAuthenticated = true
@@ -94,15 +97,16 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false
-        state.user = action.payload.user
-        state.accessToken = action.payload.accessToken
-        state.refreshToken = action.payload.refreshToken
+        state.user = action.payload
+
+        state.accessToken = getCookie('accessToken')
+        state.refreshToken = getCookie('refreshToken')
         state.isAuthenticated = true
-        toast.success("Đăng nhập thành công!")
+        toast.success('Đăng nhập thành công!')
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || "Đăng nhập thất bại"
+        state.error = action.payload || 'Đăng nhập thất bại'
       })
 
       // register
@@ -112,11 +116,11 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state) => {
         state.loading = false
-        toast.success("Đăng ký thành công! Vui lòng đăng nhập.")
+        toast.success('Đăng ký thành công! Vui lòng đăng nhập.')
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || "Đăng ký thất bại"
+        state.error = action.payload || 'Đăng ký thất bại'
       })
 
       // logout
@@ -125,7 +129,7 @@ const authSlice = createSlice({
         state.accessToken = null
         state.refreshToken = null
         state.isAuthenticated = false
-        toast.success("Đăng xuất thành công!")
+        toast.success('Đăng xuất thành công!')
       })
 
       // getCurrentUser
@@ -140,7 +144,7 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || "Lấy thông tin user thất bại"
+        state.error = action.payload || 'Lấy thông tin user thất bại'
         state.isAuthenticated = false
       })
   },

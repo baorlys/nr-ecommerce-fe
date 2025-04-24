@@ -24,11 +24,15 @@ const Header = () => {
     (state: RootState) => state.categories,
   )
 
+  console.log(user)
+
   // const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
-    dispatch(fetchCategories())
-  }, [dispatch])
+    if (categories.length == 0) {
+      dispatch(fetchCategories())
+    }
+  }, [dispatch, categories.length])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
