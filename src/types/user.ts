@@ -3,14 +3,13 @@ export interface User {
   firstName: string
   lastName: string
   email: string
+  role: 'ADMIN' | 'USER'
   phone?: string
   avatar?: string
 }
 
 export interface AuthState {
   user: User | null
-  accessToken: string | null
-  refreshToken: string | null
   loading: boolean
   error: string | null
   isAuthenticated: boolean

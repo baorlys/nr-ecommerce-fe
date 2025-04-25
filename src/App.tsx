@@ -1,24 +1,52 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
 import 'react-toastify/dist/ReactToastify.css'
 
-// Layouts
 import MainLayout from './components/layout/MainLayout'
+import AdminLayout from './components/layout/AdminLayout'
 
-// Pages
 import HomePage from './pages/HomePage'
 import ProductsPage from './pages/ProductsPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage from './pages/CartPage'
+import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import CheckoutPage from './pages/CheckoutPage'
+import ProfilePage from './pages/ProfilePage'
+import ForbiddenPage from './pages/ForbiddenPage'
 import NotFoundPage from './pages/NotFoundPage'
 
-export default function App() {
+import DashboardPage from './pages/admin/DashboardPage'
+import AdminProductsPage from './pages/admin/ProductsPage'
+import AdminCategoriesPage from './pages/admin/CategoriesPage'
+import AdminUsersPage from './pages/admin/UsersPage'
+
+import PrivateRoute from './components/common/PrivateRoute'
+import { getCurrentUser } from './store/authSlice'
+import type { AppDispatch, RootState } from './store'
+
+function AppRoutes() {
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const user = useSelector((state: RootState) => state.auth.user)
+
+  useEffect(() => {
+    dispatch(getCurrentUser())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (user?.role === 'ADMIN' && !location.pathname.startsWith('/admin')) {
+      navigate('/admin')
+    }
+  }, [user, navigate, location])
+
   return (
-    <Router>
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
+
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -29,9 +57,43 @@ export default function App() {
           <Route path="thanh-toan" element={<CheckoutPage />} />
           <Route path="dang-nhap" element={<LoginPage />} />
           <Route path="dang-ky" element={<RegisterPage />} />
+          <Route path="khong-co-quyen" element={<ForbiddenPage />} />
+
+          <Route
+            path="tai-khoan"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute requiredRole="ADMIN">
+              <AdminLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<DashboardPage />} />
+          <Route path="san-pham" element={<AdminProductsPage />} />
+          <Route path="danh-muc" element={<AdminCategoriesPage />} />
+          <Route path="nguoi-dung" element={<AdminUsersPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   )
 }

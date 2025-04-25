@@ -2,14 +2,23 @@
 
 import type React from 'react'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { FaShoppingCart, FaSearch, FaBars, FaUser } from 'react-icons/fa'
+import {
+  FaShoppingCart,
+  FaSearch,
+  FaBars,
+  FaUser,
+  FaSignOutAlt,
+  FaUserCircle,
+} from 'react-icons/fa'
 import type { RootState, AppDispatch } from '../../store'
 import { fetchCategories } from '../../store/categoriesSlice'
 import Logo from '../common/Logo'
 import { Category } from '../../types/category'
+import { logout } from '../../store/authSlice'
+import { FaUserPen } from 'react-icons/fa6'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -17,14 +26,15 @@ const Header = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+
+  const userDropdownRef = useRef<HTMLDivElement>(null)
 
   // const { cartItems } = useSelector((state: RootState) => state.cart)
   const { user } = useSelector((state: RootState) => state.auth)
   const { categories, loading: categoriesLoading } = useSelector(
     (state: RootState) => state.categories,
   )
-
-  console.log(user)
 
   // const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0)
 
@@ -40,6 +50,12 @@ const Header = () => {
       navigate(`/san-pham?search=${searchQuery}`)
       setIsMenuOpen(false)
     }
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/')
+    setIsUserDropdownOpen(false)
   }
 
   const mainCategories = categories
@@ -138,11 +154,51 @@ const Header = () => {
               )} */}
             </Link>
 
-            {
-              <Link to={user ? '/tai-khoan' : '/dang-nhap'} className="p-2">
-                <FaUser size={20} className="text-textColor hover:text-primary" />
-              </Link>
-            }
+            <div className="relative" ref={userDropdownRef}>
+              <button
+                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                className="p-2 focus:outline-none"
+              >
+                {!user ? (
+                  <Link to="/dang-nhap">
+                    <FaUser size={20} className="text-textColor hover:text-primary" />
+                  </Link>
+                ) : (
+                  <FaUserCircle size={20} className="text-purple hover:text-primary" />
+                )}
+              </button>
+
+              {isUserDropdownOpen && user && (
+                <div className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white py-1 shadow-lg">
+                  <div className="border-b border-gray-100 px-4 py-2">
+                    <p className="truncate text-sm font-medium text-gray-900">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="truncate text-xs text-gray-500">{user.email}</p>
+                  </div>
+                  <Link
+                    to="/tai-khoan"
+                    className="block flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserDropdownOpen(false)}
+                  >
+                    <FaUserPen className="mr-2" /> Thông tin tài khoản
+                  </Link>
+                  <Link
+                    to="/don-hang"
+                    className="block flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserDropdownOpen(false)}
+                  >
+                    <FaShoppingCart className="mr-2" /> Đơn hàng của tôi
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block flex w-full items-center px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    <FaSignOutAlt className="mr-2" /> Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -223,16 +279,54 @@ const Header = () => {
                 </Link>
               </div>
 
-              {
+              {user ? (
+                <div className="space-y-2 border-t border-gray-200 pt-4">
+                  <div className="mb-2 flex items-center space-x-2">
+                    <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-white">
+                      {user.firstName.charAt(0)}
+                      {user.lastName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/tai-khoan"
+                    className="text-textColor hover:text-primary flex items-center space-x-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <FaUserCircle size={20} />
+                    <span>Thông tin tài khoản</span>
+                  </Link>
+                  <Link
+                    to="/don-hang"
+                    className="text-textColor hover:text-primary flex items-center space-x-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <FaShoppingCart size={20} />
+                    <span>Đơn hàng của tôi</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center space-x-2 text-left text-red-600 hover:text-red-700"
+                  >
+                    <FaSignOutAlt size={20} />
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              ) : (
                 <Link
-                  to={user ? '/tai-khoan' : '/dang-nhap'}
+                  to="/dang-nhap"
                   className="text-textColor hover:text-primary flex items-center space-x-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <FaUser size={20} />
-                  <span>{user ? 'Tài khoản' : 'Đăng nhập'}</span>
+                  <span>Đăng nhập</span>
                 </Link>
-              }
+              )}
             </div>
           </div>
         )}

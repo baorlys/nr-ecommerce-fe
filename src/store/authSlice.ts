@@ -1,20 +1,14 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+// Cập nhật authSlice để không lưu token trong state
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { toast } from 'react-toastify'
 import type { AuthState, LoginRequest, RegisterRequest, User } from '../types/user'
 import { loginApi, registerApi, logoutApi, getCurrentUserApi } from '../services/authService'
-import { getCookie } from '../utils/cookies'
-
-// Khởi tạo state từ cookies nếu có
-const accessToken = getCookie('accessToken')
-const refreshToken = getCookie('refreshToken')
 
 const initialState: AuthState = {
   user: null,
-  accessToken: accessToken,
-  refreshToken: refreshToken,
   loading: false,
   error: null,
-  isAuthenticated: !!accessToken,
+  isAuthenticated: false,
 }
 
 // Thunk actions
@@ -25,8 +19,7 @@ export const login = createAsyncThunk<User, LoginRequest, { rejectValue: string 
       const response = await loginApi(userData)
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại'
-      return rejectWithValue(errorMessage)
+      return rejectWithValue(String(error.message))
     }
   },
 )
@@ -36,7 +29,6 @@ export const register = createAsyncThunk<User, RegisterRequest, { rejectValue: s
   async (userData, { rejectWithValue }) => {
     try {
       const response = await registerApi(userData)
-
       return response
     } catch (error) {
       return rejectWithValue(String(error.message))
@@ -73,17 +65,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (
-      state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>,
-    ) => {
-      state.accessToken = action.payload.accessToken
-      state.refreshToken = action.payload.refreshToken
-      state.isAuthenticated = true
-    },
     clearCredentials: (state) => {
-      state.accessToken = null
-      state.refreshToken = null
       state.user = null
       state.isAuthenticated = false
     },
@@ -98,9 +80,6 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false
         state.user = action.payload
-
-        state.accessToken = getCookie('accessToken')
-        state.refreshToken = getCookie('refreshToken')
         state.isAuthenticated = true
         toast.success('Đăng nhập thành công!')
       })
@@ -126,8 +105,6 @@ const authSlice = createSlice({
       // logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null
-        state.accessToken = null
-        state.refreshToken = null
         state.isAuthenticated = false
         toast.success('Đăng xuất thành công!')
       })
@@ -150,6 +127,6 @@ const authSlice = createSlice({
   },
 })
 
-export const { setCredentials, clearCredentials } = authSlice.actions
+export const { clearCredentials } = authSlice.actions
 
 export default authSlice.reducer

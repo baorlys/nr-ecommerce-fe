@@ -5,9 +5,19 @@ export interface ApiError {
   status?: number
 }
 
-export interface PaginationParams {
-  page?: number
-  limit?: number
+export interface PageResponse<T> {
+  message: string
+  data: T[]
+  pagination: Pagination
+}
+
+export interface Pagination {
+  page: number
+  size: number
+  totalItems: number
+  totalPages: number
+  hasNext: boolean
+  hasPrevious: boolean
 }
 
 export interface FormikHelpers<Values> {

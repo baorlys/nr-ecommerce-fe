@@ -27,14 +27,18 @@ const LoginPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
 
-  const handleSubmit = async (values: LoginFormValues, { setSubmitting, setErrors }: { setSubmitting: (isSubmitting: boolean) => void; setErrors: (errors: { [key: string]: string }) => void }) => {
+  const handleSubmit = async (
+    values: LoginFormValues,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
+  ) => {
+    setAuthError(null)
     try {
       await dispatch(login(values)).unwrap()
       navigate('/')
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại'
-      setErrors({ auth: errorMessage })
+      setAuthError(error)
     } finally {
       setSubmitting(false)
     }
@@ -47,18 +51,19 @@ const LoginPage = () => {
           <h1 className="mb-6 text-center text-2xl font-bold">Đăng nhập</h1>
 
           <Formik
-            initialValues={{ email: '', password: '', rememberMe: false }}
+            initialValues={{
+              email: '',
+              password: '',
+              rememberMe: false,
+            }}
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting }) => (
               <Form className="space-y-4">
-                {/* {errors.auth && (
-                  <div className="rounded-md bg-red-100 p-3 text-sm text-red-700">
-                    {errors.auth}
-                  </div>
-                )} */}
-
+                {authError && (
+                  <div className="rounded-md bg-red-100 p-3 text-sm text-red-700">{authError}</div>
+                )}
                 <div>
                   <label htmlFor="email" className="mb-1 block font-medium text-gray-700">
                     Email

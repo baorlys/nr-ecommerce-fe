@@ -1,4 +1,3 @@
-import { PaginationParams } from './common'
 export interface Product {
   id: string
   name: string
@@ -43,7 +42,7 @@ export interface ProductReview {
   comment: string
 }
 
-export interface ProductFilterParams extends PaginationParams {
+export interface ProductFilterParams {
   search?: string
   categoryId?: string
   minPrice?: number

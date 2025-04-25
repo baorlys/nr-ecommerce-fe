@@ -7,7 +7,6 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from '../components/common/Button'
 import { register } from '../store/authSlice'
 import type { AppDispatch } from '../store'
-import type { ApiError } from '../types/common'
 
 interface RegisterFormValues {
   firstName: string
