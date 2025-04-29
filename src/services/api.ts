@@ -1,22 +1,29 @@
-import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
-interface CustomAxiosRequestConfig extends AxiosRequestConfig {
-  _retry?: boolean
-}
-
-// Tạo instance axios cho API với withCredentials: true để gửi cookies
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Đảm bảo cookies được gửi với mọi request
+  withCredentials: true,
 })
 
-// Interceptor cho request
+let isRefreshing = false
+let failedQueue: any[] = []
+
+const processQueue = (error: any, token: null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve()
+    }
+  })
+  failedQueue = []
+}
+
 api.interceptors.request.use(
-  (config: AxiosRequestConfig): AxiosRequestConfig => {
-    // Không cần thêm Authorization header vì JWT token sẽ được gửi tự động qua cookies
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     return config
   },
   (error: AxiosError): Promise<AxiosError> => {
@@ -24,32 +31,38 @@ api.interceptors.request.use(
   },
 )
 
-// Interceptor cho response
 api.interceptors.response.use(
-  (response: AxiosResponse): AxiosResponse => {
-    return response
-  },
-  async (error: AxiosError): Promise<any> => {
-    const originalRequest = error.config as CustomAxiosRequestConfig
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
 
-    const isLoginOrRegisterEndpoint =
-      originalRequest.url?.includes('/auth/login') ||
-      originalRequest.url?.includes('/auth/register')
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject })
+        })
+          .then(() => {
+            return api(originalRequest)
+          })
+          .catch((err) => {
+            return Promise.reject(err)
+          })
+      }
 
-    // If 401 and not from login/register, and we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry && !isLoginOrRegisterEndpoint) {
       originalRequest._retry = true
+      isRefreshing = true
 
       try {
-        await axios.post(
-          `${import.meta.env.VITE_API_URL || '/api'}/auth/refresh-token`,
-          {},
-          { withCredentials: true },
-        )
+        await api.post('/auth/refresh-token')
+        processQueue(null)
+
         return api(originalRequest)
-      } catch (refreshError) {
-        window.location.href = '/dang-nhap'
-        return Promise.reject(refreshError)
+      } catch (err) {
+        processQueue(err)
+        // Optional: redirect to login page or clear user session
+        return Promise.reject(err)
+      } finally {
+        isRefreshing = false
       }
     }
 

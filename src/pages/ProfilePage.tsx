@@ -10,7 +10,7 @@ import type { RootState, AppDispatch } from '../store'
 import type { FormikHelpers } from '../types/common'
 import { toast } from 'react-toastify'
 import api from '../services/api'
-import { getCurrentUser } from '../store/authSlice'
+import { getCurrentUser } from '../store/slice/authSlice'
 
 // Định nghĩa kiểu dữ liệu cho form
 interface ProfileFormValues {

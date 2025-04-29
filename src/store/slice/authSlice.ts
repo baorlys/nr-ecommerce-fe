@@ -1,8 +1,8 @@
-// Cập nhật authSlice để không lưu token trong state
+import { handleApiError } from './../../utils/apiErrorHandler'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { toast } from 'react-toastify'
-import type { AuthState, LoginRequest, RegisterRequest, User } from '../types/user'
-import { loginApi, registerApi, logoutApi, getCurrentUserApi } from '../services/authService'
+import type { AuthState, LoginRequest, RegisterRequest, User } from '../../types/user'
+import { loginApi, registerApi, logoutApi, getCurrentUserApi } from '../../services/authService'
 
 const initialState: AuthState = {
   user: null,
@@ -19,7 +19,7 @@ export const login = createAsyncThunk<User, LoginRequest, { rejectValue: string 
       const response = await loginApi(userData)
       return response
     } catch (error) {
-      return rejectWithValue(String(error.message))
+      return rejectWithValue(handleApiError(error).message)
     }
   },
 )
@@ -31,7 +31,7 @@ export const register = createAsyncThunk<User, RegisterRequest, { rejectValue: s
       const response = await registerApi(userData)
       return response
     } catch (error) {
-      return rejectWithValue(String(error.message))
+      return rejectWithValue(handleApiError(error).message)
     }
   },
 )
@@ -42,8 +42,7 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
     try {
       await logoutApi()
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đăng xuất thất bại'
-      return rejectWithValue(errorMessage)
+      return rejectWithValue(handleApiError(error).message)
     }
   },
 )
@@ -55,8 +54,7 @@ export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: string
       const response = await getCurrentUserApi()
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Lấy thông tin user thất bại'
-      return rejectWithValue(errorMessage)
+      return rejectWithValue(error)
     }
   },
 )

@@ -14,10 +14,10 @@ import {
   FaUserCircle,
 } from 'react-icons/fa'
 import type { RootState, AppDispatch } from '../../store'
-import { fetchCategories } from '../../store/categoriesSlice'
+import { fetchCategories } from '../../store/slice/categoriesSlice'
 import Logo from '../common/Logo'
 import { Category } from '../../types/category'
-import { logout } from '../../store/authSlice'
+import { logout } from '../../store/slice/authSlice'
 import { FaUserPen } from 'react-icons/fa6'
 
 const Header = () => {

@@ -12,8 +12,6 @@ interface PrivateRouteProps {
 const PrivateRoute: FC<PrivateRouteProps> = ({ children, requiredRole }) => {
   const { isAuthenticated, user, loading } = useSelector((state: RootState) => state.auth)
   const location = useLocation()
-  console.log('PrivateRoute - user role', user?.role, requiredRole)
-
   // Nếu đang loading, hiển thị loading indicator
   if (loading) {
     return <div className="flex h-screen items-center justify-center">Đang tải...</div>

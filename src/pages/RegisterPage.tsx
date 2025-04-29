@@ -5,7 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from '../components/common/Button'
-import { register } from '../store/authSlice'
+import { register } from '../store/slice/authSlice'
 import type { AppDispatch } from '../store'
 
 interface RegisterFormValues {

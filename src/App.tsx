@@ -19,12 +19,12 @@ import ForbiddenPage from './pages/ForbiddenPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 import DashboardPage from './pages/admin/DashboardPage'
-import AdminProductsPage from './pages/admin/ProductsPage'
-import AdminCategoriesPage from './pages/admin/CategoriesPage'
+import AdminProductsPage from './pages/admin/ManageProductsPage'
+import AdminCategoriesPage from './pages/admin/ManageCategoriesPage'
 import AdminUsersPage from './pages/admin/UsersPage'
 
 import PrivateRoute from './components/common/PrivateRoute'
-import { getCurrentUser } from './store/authSlice'
+import { getCurrentUser } from './store/slice/authSlice'
 import type { AppDispatch, RootState } from './store'
 
 function AppRoutes() {

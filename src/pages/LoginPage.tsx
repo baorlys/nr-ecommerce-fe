@@ -7,7 +7,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { FaEye, FaEyeSlash, FaFacebook, FaGoogle } from 'react-icons/fa'
 import Button from '../components/common/Button'
-import { login } from '../store/authSlice'
+import { login } from '../store/slice/authSlice'
 import type { AppDispatch } from '../store'
 
 const LoginSchema = Yup.object().shape({

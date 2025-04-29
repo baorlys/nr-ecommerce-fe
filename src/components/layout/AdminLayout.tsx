@@ -16,7 +16,7 @@ import {
   FaUser,
 } from 'react-icons/fa'
 import Logo from '../common/Logo'
-import { logout } from '../../store/authSlice'
+import { logout } from '../../store/slice/authSlice'
 import type { AppDispatch } from '../../store'
 
 const AdminLayout = () => {
@@ -50,7 +50,7 @@ const AdminLayout = () => {
           mobileMenuOpen ? 'flex' : 'hidden'
         }`}
       >
-        <div className="border-primary-dark flex items-center justify-between border-b p-4">
+        <div className="border-primary-dark flex items-center justify-between border-b p-3">
           <Link to="/admin" className="flex items-center">
             <Logo variant="light" />
           </Link>

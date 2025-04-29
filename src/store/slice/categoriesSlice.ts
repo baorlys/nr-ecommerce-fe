@@ -1,15 +1,17 @@
+import { Category } from './../../types/category'
+import { handleApiError } from './../../utils/apiErrorHandler'
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
-import type { Category } from '../types/category'
-import { fetchCategoriesApi } from '../services/categoryService'
-
+import { fetchCategoriesApi } from '../../services/categoryService'
 interface CategoriesState {
   categories: Category[]
+  category: Category | null
   loading: boolean
   error: string | null
 }
 
 const initialState: CategoriesState = {
   categories: [],
+  category: {} as Category,
   loading: false,
   error: null,
 }
@@ -22,8 +24,7 @@ export const fetchCategories = createAsyncThunk(
       const response = await fetchCategoriesApi()
       return response
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch categories'
-      return rejectWithValue(errorMessage)
+      return rejectWithValue(handleApiError(error))
     }
   },
 )
@@ -34,6 +35,7 @@ const categoriesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch all categories
       .addCase(fetchCategories.pending, (state) => {
         state.loading = true
         state.error = null
