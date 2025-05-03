@@ -3,12 +3,14 @@
 import React from 'react'
 
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaFolder } from 'react-icons/fa'
 import Button from '../../components/common/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCategoriesFlat, deleteCategory } from '../../store/slice/admin/adminCategoriesSlice'
 import type { RootState, AppDispatch } from '../../store'
-import CategoryFormModal from '../../components/admin/CategoryFormModal'
+import ConfirmModal from '../../components/common/ConfirmModal'
+import { toast } from 'react-toastify'
 
 const ManageCategoriesPage = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -20,7 +22,7 @@ const ManageCategoriesPage = () => {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: string } | null>(null)
 
   // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -65,40 +67,39 @@ const ManageCategoriesPage = () => {
   }
 
   // Xử lý xóa danh mục
-  const handleDeleteCategory = (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-      dispatch(deleteCategory(id))
-      dispatch(fetchCategoriesFlat())
+  const handleDeleteCategory = async () => {
+    if (selectedCategoryId) {
+      try {
+        await dispatch(deleteCategory(selectedCategoryId)).unwrap()
+        await dispatch(fetchCategoriesFlat())
+        toast.success('Xóa danh mục thành công')
+        closeConfirmModal()
+      } catch (error) {
+        console.error('Failed to delete category:', error)
+        toast.error('Lỗi khi xóa danh mục. Vui lòng thử lại.')
+      }
     }
   }
 
-  // Xử lý mở modal thêm/sửa danh mục
-  const openAddModal = () => {
-    setSelectedCategoryId(undefined)
-    setIsModalOpen(true)
-  }
-
-  const openEditModal = (id: string) => {
+  const openConfirmModal = (id: string) => {
     setSelectedCategoryId(id)
-    setIsModalOpen(true)
+    setIsConfirmModalOpen(true)
   }
 
-  const closeModal = () => {
-    setIsModalOpen(false)
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false)
     setSelectedCategoryId(undefined)
-  }
-
-  const handleModalSuccess = () => {
-    dispatch(fetchCategoriesFlat())
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold text-gray-800">Quản lý danh mục</h1>
-        <Button variant="primary" className="flex items-center" onClick={openAddModal}>
-          <FaPlus className="mr-2" /> Thêm danh mục mới
-        </Button>
+        <Link to="/admin/danh-muc/them-moi">
+          <Button variant="primary" className="flex items-center">
+            <FaPlus className="mr-2" /> Thêm danh mục mới
+          </Button>
+        </Link>
       </div>
 
       <div className="rounded-lg bg-white p-6 shadow-md">
@@ -206,14 +207,14 @@ const ManageCategoriesPage = () => {
 
                       <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <div className="flex justify-end space-x-2">
-                          <button
-                            onClick={() => openEditModal(category.id)}
+                          <Link
+                            to={`/admin/danh-muc/chinh-sua/${category.id}`}
                             className="text-blue-600 hover:text-blue-900"
                           >
                             <FaEdit />
-                          </button>
+                          </Link>
                           <button
-                            onClick={() => handleDeleteCategory(category.id)}
+                            onClick={() => openConfirmModal(category.id)}
                             className="text-red-600 hover:text-red-900"
                           >
                             <FaTrash />
@@ -269,12 +270,13 @@ const ManageCategoriesPage = () => {
         )}
       </div>
 
-      {/* Category Form Modal */}
-      <CategoryFormModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        categoryId={selectedCategoryId}
-        onSuccess={handleModalSuccess}
+      {/* Confirm Modal for Delete Category */}
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={closeConfirmModal}
+        title="Xác nhận xóa danh mục"
+        message="Bạn có chắc chắn muốn xóa danh mục này?"
+        onConfirm={handleDeleteCategory}
       />
     </div>
   )

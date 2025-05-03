@@ -33,7 +33,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
       <Link to={linkToDetail}>
         <div className="h-48 overflow-hidden">
           <img
-            src={product.image || '/placeholder.svg'}
+            src={product.imageUrl || '/placeholder.svg'}
             alt={product.name}
             className="h-full w-full object-cover"
           />

@@ -127,6 +127,7 @@ const adminCategoriesSlice = createSlice({
       .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<string>) => {
         state.loading = false
         state.categories = state.categories.filter((category) => category.id !== action.payload)
+        toast.warning('Xóa danh mục thành công')
       })
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false
@@ -141,6 +142,7 @@ const adminCategoriesSlice = createSlice({
       .addCase(createCategory.fulfilled, (state, action: PayloadAction<CategoryFlat>) => {
         state.loading = false
         state.categories.push(action.payload)
+        toast.success('Tạo danh mục thành công')
       })
       .addCase(createCategory.rejected, (state, action) => {
         state.loading = false

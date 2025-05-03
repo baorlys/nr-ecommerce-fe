@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaStar, FaCartPlus, FaMinus, FaPlus } from 'react-icons/fa'
 import Button from '../components/common/Button'
-import { fetchProductById } from '../store/productsSlice'
+import { fetchProductById } from '../store/slice/productsSlice'
 // import { addToCart } from '../store/cartSlice'
 import type { RootState, AppDispatch } from '../store'
 import { formatCurrency } from '../utils/format'
@@ -28,9 +28,12 @@ const ProductDetailPage = () => {
     if (productId) {
       dispatch(fetchProductById(productId))
       window.scrollTo(0, 0)
-      setSelectedVariant(product?.variants.find((v) => v.isInStock) || null)
     }
-  }, [dispatch, productId, product?.variants])
+  }, [dispatch, productId])
+
+  useEffect(() => {
+    setSelectedVariant(product?.variants.find((v) => v.stockQuantity > 0) || null)
+  }, [product])
 
   const handleQuantityChange = (value: number) => {
     if (value >= 1) {
@@ -76,7 +79,7 @@ const ProductDetailPage = () => {
   }
 
   // Placeholder images for development
-  const placeholderImages = product.images
+  const placeholderImages = product.images.map((image) => image.imageUrl)
 
   return (
     <div className="container-custom py-8">
@@ -133,15 +136,17 @@ const ProductDetailPage = () => {
               {[...Array(5)].map((_, i) => (
                 <FaStar
                   key={i}
-                  className={i < Math.floor(product.rating) ? 'text-yellow' : 'text-gray-300'}
+                  className={
+                    i < Math.floor(product.averageRating) ? 'text-yellow' : 'text-gray-300'
+                  }
                 />
               ))}
             </div>
-            <span className="ml-2 text-gray-500">({product.reviewCount} đánh giá)</span>
+            <span className="ml-2 text-gray-500">({product.totalReviews} đánh giá)</span>
           </div>
 
           <div className="text-primary mb-4 text-2xl font-bold">
-            {formatCurrency(selectedVariant?.price || product.price)}
+            {formatCurrency(selectedVariant?.price || 0)}
           </div>
 
           <div className="mb-6">
@@ -155,19 +160,19 @@ const ProductDetailPage = () => {
                 {product.variants.map((variant) => (
                   <button
                     key={variant.id}
-                    disabled={!variant.isInStock}
+                    disabled={!(variant.stockQuantity > 0)}
                     onClick={() => handleVariantChange(variant)}
                     className={`rounded-md border-2 px-4 py-2 ${
                       selectedVariant?.id === variant.id
                         ? 'border-primary text-primary'
                         : 'border-gray-300 text-gray-700'
                     } ${
-                      !variant.isInStock
+                      !(variant.stockQuantity > 0)
                         ? 'cursor-not-allowed opacity-50'
                         : 'hover:border-primary hover:text-primary'
                     }`}
                   >
-                    {variant.weight} {variant.unit}
+                    {variant.name}
                   </button>
                 ))}
               </div>
@@ -217,10 +222,10 @@ const ProductDetailPage = () => {
             <div className="mb-2 flex">
               <span className="w-32 font-medium">Danh mục:</span>
               <a
-                href={`/san-pham/${product.categorySlug}`}
+                href={`/san-pham/${product.category.slug}`}
                 className="text-primary hover:underline"
               >
-                {product.categoryName}
+                {product.category.name}
               </a>
             </div>
 
@@ -293,7 +298,7 @@ const ProductDetailPage = () => {
               }`}
               onClick={() => setActiveTab('reviews')}
             >
-              Đánh giá ({product.reviewCount})
+              Đánh giá ({product.totalReviews})
             </button>
             <button
               className={`border-b-2 px-1 py-4 text-sm font-medium ${

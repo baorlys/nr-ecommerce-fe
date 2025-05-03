@@ -1,45 +1,46 @@
+import { CategoryFlat } from './category'
+
+export enum ProductUnit {
+  KG = 'kg',
+  G = 'g',
+  L = 'l',
+  ML = 'ml',
+}
+
 export interface Product {
   id: string
   name: string
   slug: string
   price: number
-  image: string
+  imageUrl: string
 }
 
 export interface ProductDetail {
   id: string
   name: string
-  slug: string
-  price: number
-  images: string[]
-  categoryId: string
-  categoryName: string
-  categorySlug: string
-  rating: number
-  reviewCount: number
-  isFeatured: boolean
-  isInStock: boolean
   shortDescription: string
   description: string
-  reviews?: ProductReview[]
+  category: CategoryFlat
+  images: ProductImage[]
   variants: ProductVariant[]
+  averageRating: number
+  totalReviews: number
+  isFeatured: boolean
 }
 
 export interface ProductVariant {
-  id: string
+  id: string | null
   name: string
   price: number
-  weight: number
-  unit: string
-  isInStock: boolean
+  stockQuantity: number
 }
 
-export interface ProductReview {
-  id: string
-  name: string
-  rating: number
-  date: string
-  comment: string
+export interface ProductImage {
+  id: string | null
+  imageUrl: string
+  altText: string
+  isPrimary: boolean
+  sortOrder: number
 }
 
 export interface ProductFilterParams {
@@ -49,4 +50,28 @@ export interface ProductFilterParams {
   maxPrice?: number
   rating?: number
   sortBy?: 'newest' | 'price-asc' | 'price-desc' | 'rating'
+}
+
+export interface AdminProductResponse {
+  id: string
+  name: string
+  slug: string
+  imageUrl: string
+  categoryId: string
+  categoryName: string
+  isFeatured: boolean
+  numberOfVariants: number
+  averageRating: number
+  totalReviews: number
+  createdOn: string
+  updatedOn: string
+}
+
+export interface ProductRequest {
+  name: string
+  shortDescription: string
+  description: string
+  categoryId: string
+  images: ProductImage[]
+  variants: ProductVariant[]
 }

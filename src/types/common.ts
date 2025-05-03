@@ -4,22 +4,6 @@ export interface ApiError {
   code?: string
   status?: number
 }
-
-export interface PageResponse<T> {
-  message: string
-  data: T[]
-  pagination: Pagination
-}
-
-export interface Pagination {
-  page: number
-  size: number
-  totalItems: number
-  totalPages: number
-  hasNext: boolean
-  hasPrevious: boolean
-}
-
 export interface FormikHelpers<Values> {
   setSubmitting: (isSubmitting: boolean) => void
   setErrors: (errors: { [key: string]: string }) => void
@@ -31,4 +15,20 @@ export interface FormikHelpers<Values> {
   validateForm: () => Promise<unknown>
   validateField: (field: string) => Promise<void>
   resetForm: (nextState?: unknown) => void
+}
+
+export interface Pagination {
+  page: number
+  size: number
+  totalItems: number
+  totalPages: number
+  hasNext: boolean
+  hasPrevious: boolean
+}
+
+export interface PagedResponseSuccess<T> {
+  status: string
+  message: string
+  data: T[]
+  pagination: Pagination
 }

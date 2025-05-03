@@ -21,7 +21,9 @@ import NotFoundPage from './pages/NotFoundPage'
 import DashboardPage from './pages/admin/DashboardPage'
 import AdminProductsPage from './pages/admin/ManageProductsPage'
 import AdminCategoriesPage from './pages/admin/ManageCategoriesPage'
-import AdminUsersPage from './pages/admin/UsersPage'
+import AdminUsersPage from './pages/admin/ManageUsersPage'
+import ProductFormPage from './pages/admin/ProductFormPage'
+import CategoryFormPage from './pages/admin/CategoryFormPage'
 
 import PrivateRoute from './components/common/PrivateRoute'
 import { getCurrentUser } from './store/slice/authSlice'
@@ -38,7 +40,7 @@ function AppRoutes() {
   }, [dispatch])
 
   useEffect(() => {
-    if (user?.role === 'ADMIN' && !location.pathname.startsWith('/admin')) {
+    if (user?.role.name === 'ADMIN' && !location.pathname.startsWith('/admin')) {
       navigate('/admin')
     }
   }, [user, navigate, location])
@@ -81,7 +83,11 @@ function AppRoutes() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="san-pham" element={<AdminProductsPage />} />
+          <Route path="san-pham/them-moi" element={<ProductFormPage />} />
+          <Route path="san-pham/chinh-sua/:productId" element={<ProductFormPage />} />
           <Route path="danh-muc" element={<AdminCategoriesPage />} />
+          <Route path="danh-muc/them-moi" element={<CategoryFormPage />} />
+          <Route path="danh-muc/chinh-sua/:categoryId" element={<CategoryFormPage />} />
           <Route path="nguoi-dung" element={<AdminUsersPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

@@ -3,11 +3,16 @@ export interface User {
   firstName: string
   lastName: string
   email: string
-  role: 'ADMIN' | 'USER'
+  role: Role
   phone?: string
-  avatar?: string
+  createdOn: string
+  updatedOn: string
 }
 
+export interface Role {
+  id: string
+  name: string
+}
 export interface AuthState {
   user: User | null
   loading: boolean
