@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ui/ProductCard'
 import Button from '../components/common/Button'
-import { fetchProducts, fetchProductsByCategory } from '../store/slice/productsSlice'
+import { fetchProducts } from '../store/slice/productsSlice'
 import { fetchCategories } from '../store/slice/categoriesSlice'
 import type { RootState, AppDispatch } from '../store'
 import { FaFilter, FaSort } from 'react-icons/fa'
+import { ProductFilterParams } from '../types/product'
+import Pagination from '../components/common/Pagination'
 
 const ProductsPage = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -16,49 +18,49 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')
 
-  const { products, loading, error } = useSelector((state: RootState) => state.products)
+  const { products, pagination, loading, error } = useSelector((state: RootState) => state.products)
   const { categories } = useSelector((state: RootState) => state.categories)
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryId || null)
   const [sortBy, setSortBy] = useState('newest')
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000000 })
+
+  const [filters, setFilters] = useState({} as ProductFilterParams)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(9)
+
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     dispatch(fetchCategories())
+    dispatch(
+      fetchProducts({
+        page: currentPage - 1,
+        size: itemsPerPage,
+        filter: filters,
+      }),
+    )
+  }, [dispatch, filters, currentPage, itemsPerPage])
 
-    if (categoryId) {
-      dispatch(fetchProductsByCategory(categoryId))
-      setSelectedCategory(categoryId)
-    } else if (searchQuery) {
-      // Implement search functionality
-      dispatch(fetchProducts({ search: searchQuery }))
-    } else {
-      dispatch(fetchProducts({}))
+  useEffect(() => {
+    if (searchQuery) {
+      setFilters((prev) => ({ ...prev, search: searchQuery }))
     }
-  }, [dispatch, categoryId, searchQuery])
+  }, [searchQuery])
 
   const handleCategoryChange = (catId: string | null) => {
     setSelectedCategory(catId)
-    if (catId) {
-      dispatch(fetchProductsByCategory(catId))
-    } else {
-      dispatch(fetchProducts({}))
-    }
+    setFilters((prev) => ({ ...prev, categoryId: catId || null }))
   }
 
-  const handleSortChange = (value: string) => {
+  const handleSortChange = (value: 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC') => {
     setSortBy(value)
-    // Implement sorting logic
+    setFilters((prev) => ({ ...prev, sortBy: value }))
   }
 
   const handlePriceChange = (type: 'min' | 'max', value: number) => {
     setPriceRange((prev) => ({ ...prev, [type]: value }))
-  }
-
-  const applyFilters = () => {
-    // Implement filter logic
-    setShowFilters(false)
+    setFilters((prev) => ({ ...prev, [`${type}Price`]: value }))
   }
 
   const resetFilters = () => {
@@ -113,8 +115,8 @@ const ProductsPage = () => {
                       type="radio"
                       id={`category-${category.id}`}
                       name="category"
-                      checked={selectedCategory === category.slug}
-                      onChange={() => handleCategoryChange(category.slug)}
+                      checked={selectedCategory === category.id}
+                      onChange={() => handleCategoryChange(category.id)}
                       className="mr-2"
                     />
                     <label htmlFor={`category-${category.id}`}>{category.name}</label>
@@ -137,6 +139,7 @@ const ProductsPage = () => {
                     min="0"
                     max="500000"
                     step="10000"
+                    name="minPrice"
                     value={priceRange.min}
                     onChange={(e) => handlePriceChange('min', Number.parseInt(e.target.value))}
                     className="w-full"
@@ -152,6 +155,7 @@ const ProductsPage = () => {
                     min="0"
                     max="1000000"
                     step="10000"
+                    name="maxPrice"
                     value={priceRange.max}
                     onChange={(e) => handlePriceChange('max', Number.parseInt(e.target.value))}
                     className="w-full"
@@ -161,7 +165,7 @@ const ProductsPage = () => {
             </div>
 
             {/* Rating */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h4 className="mb-2 font-semibold">Đánh giá</h4>
               <div className="space-y-2">
                 {[5, 4, 3, 2, 1].map((rating) => (
@@ -184,10 +188,9 @@ const ProductsPage = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             <div className="flex flex-col gap-2">
-              <Button onClick={applyFilters}>Áp dụng</Button>
               <Button variant="outline" onClick={resetFilters}>
                 Đặt lại
               </Button>
@@ -207,20 +210,21 @@ const ProductsPage = () => {
             </h1>
 
             <div className="flex items-center justify-between">
-              <p className="text-gray-600">{products.length} sản phẩm</p>
+              <p className="text-gray-600">{pagination?.totalItems} sản phẩm</p>
 
               <div className="flex items-center">
                 <span className="mr-2 hidden sm:inline">Sắp xếp theo:</span>
                 <div className="relative">
                   <select
                     value={sortBy}
-                    onChange={(e) => handleSortChange(e.target.value)}
+                    onChange={(e) =>
+                      handleSortChange(e.target.value as 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC')
+                    }
                     className="focus:ring-primary appearance-none rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 focus:ring-2 focus:outline-none"
                   >
-                    <option value="newest">Mới nhất</option>
-                    <option value="price-asc">Giá: Thấp đến cao</option>
-                    <option value="price-desc">Giá: Cao đến thấp</option>
-                    <option value="rating">Đánh giá</option>
+                    <option value="NEWEST">Mới nhất</option>
+                    <option value="PRICE_ASC">Giá: Thấp đến cao</option>
+                    <option value="PRICE_DESC">Giá: Cao đến thấp</option>
                   </select>
                   <FaSort className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400" />
                 </div>
@@ -257,28 +261,16 @@ const ProductsPage = () => {
           )}
 
           {/* Pagination */}
-          {products.length > 0 && (
-            <div className="mt-8 flex justify-center">
-              <nav className="flex items-center space-x-2">
-                <button className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50">
-                  Trước
-                </button>
-                <button className="bg-primary rounded-md px-3 py-1 text-white">1</button>
-                <button className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50">
-                  2
-                </button>
-                <button className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50">
-                  3
-                </button>
-                <span className="px-3 py-1">...</span>
-                <button className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50">
-                  10
-                </button>
-                <button className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50">
-                  Sau
-                </button>
-              </nav>
-            </div>
+          {pagination && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              hasPrevious={pagination.hasPrevious}
+              hasNext={pagination.hasNext}
+              onPageChange={(page) => setCurrentPage(page)}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.size}
+            />
           )}
         </div>
       </div>

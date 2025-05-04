@@ -44,12 +44,12 @@ export interface ProductImage {
 }
 
 export interface ProductFilterParams {
-  search?: string
-  categoryId?: string
-  minPrice?: number
-  maxPrice?: number
-  rating?: number
-  sortBy?: 'newest' | 'price-asc' | 'price-desc' | 'rating'
+  search?: string | null
+  categoryId?: string | null
+  minPrice?: number | null
+  maxPrice?: number | null
+  rating?: number | null
+  sortBy?: 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC'
 }
 
 export interface AdminProductResponse {

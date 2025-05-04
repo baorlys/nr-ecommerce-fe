@@ -1,11 +1,20 @@
-import { products } from '../mock'
 import api from './api'
 import { ProductFilterParams, ProductRequest } from '../types/product'
 
 // API functions
-export const fetchProductsApi = async (params: ProductFilterParams) => {
+export const fetchProductsApi = async (params: {
+  page?: number
+  size?: number
+  filter?: ProductFilterParams | null
+}) => {
   try {
-    const response = await api.get('/products', { params })
+    const response = await api.get('/products', {
+      params: {
+        page: params.page,
+        size: params.size,
+        ...(params.filter ? params.filter : {}),
+      },
+    })
     return response.data
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products'
@@ -25,15 +34,8 @@ export const fetchProductByIdApi = async (id: string) => {
 
 export const fetchProductsByCategoryApi = async (categoryId: string) => {
   try {
-    // Trong môi trường thực tế, sẽ gọi API
-    // const response = await api.get(`/products/category/${categoryId}`);
-    // return response.data;
-
-    // Trong môi trường development, sử dụng mock data
-    // const filteredProducts = products.filter((p) => p.categorySlug === categoryId)
-    const filteredProducts = products
-
-    return filteredProducts
+    const response = await api.get(`/products?categoryId=${categoryId}`)
+    return response.data
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products'
     throw new Error(errorMessage)

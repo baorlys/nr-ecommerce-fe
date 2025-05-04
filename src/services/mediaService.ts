@@ -18,3 +18,15 @@ export const uploadMediaApi = async (file: FormData): Promise<string> => {
     throw new Error(vietnameseMessage)
   }
 }
+
+export const deleteMediaApi = async (imgUrl: string) => {
+  try {
+    await api.delete(`/media`, { params: { imgUrl } })
+  } catch (error) {
+    const apiError = error.response?.data as ApiError
+    const vietnameseMessage =
+      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Xóa tệp thất bại'
+
+    throw new Error(vietnameseMessage)
+  }
+}

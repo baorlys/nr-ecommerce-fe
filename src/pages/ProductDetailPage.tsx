@@ -12,6 +12,7 @@ import { formatCurrency } from '../utils/format'
 import { ProductVariant } from '../types/product'
 import Review from '../components/ui/Review'
 import ShippingInfo from '../components/ui/ShippingInfo'
+import { addToCart } from '../store/slice/cartSlice'
 
 const ProductDetailPage = () => {
   const { productId } = useParams()
@@ -44,19 +45,19 @@ const ProductDetailPage = () => {
     setSelectedVariant(variant)
   }
 
-  // const handleAddToCart = () => {
-  //   if (product) {
-  //     dispatch(
-  //       addToCart({
-  //         id: product.id,
-  //         name: product.name,
-  //         price: product.price,
-  //         image: product.images[0],
-  //         quantity,
-  //       }),
-  //     )
-  //   }
-  // }
+  const handleAddToCart = () => {
+    if (product) {
+      dispatch(
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: selectedVariant?.price || 0,
+          image: product.images[0].imageUrl,
+          quantity,
+        }),
+      )
+    }
+  }
 
   if (loading || !product) {
     return (
@@ -211,7 +212,7 @@ const ProductDetailPage = () => {
               variant="cta"
               size="lg"
               className="flex flex-1 items-center justify-center gap-2"
-              // onClick={handleAddToCart}
+              onClick={handleAddToCart}
             >
               <FaCartPlus /> Thêm vào giỏ hàng
             </Button>

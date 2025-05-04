@@ -30,13 +30,13 @@ const Header = () => {
 
   const userDropdownRef = useRef<HTMLDivElement>(null)
 
-  // const { cartItems } = useSelector((state: RootState) => state.cart)
+  const { cartItems } = useSelector((state: RootState) => state.cart)
   const { user } = useSelector((state: RootState) => state.auth)
   const { categories, loading: categoriesLoading } = useSelector(
     (state: RootState) => state.categories,
   )
 
-  // const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0)
+  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
     if (categories.length == 0) {
@@ -275,7 +275,7 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <FaShoppingCart size={20} />
-                  {/* <span>Giỏ hàng ({totalItems})</span> */}
+                  <span>Giỏ hàng ({totalItems})</span>
                 </Link>
               </div>
 

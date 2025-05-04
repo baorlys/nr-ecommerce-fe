@@ -7,6 +7,7 @@ import {
 } from '../../services/productService'
 import { handleApiError } from '../../utils/apiErrorHandler'
 import { ApiError } from '../../utils/ApiError'
+import { Pagination } from '../../types/common'
 
 interface ProductsState {
   products: Product[]
@@ -14,6 +15,7 @@ interface ProductsState {
   product: ProductDetail | null
   loading: boolean
   error: ApiError | null
+  pagination: Pagination | null
 }
 
 const initialState: ProductsState = {
@@ -22,12 +24,16 @@ const initialState: ProductsState = {
   product: null,
   loading: false,
   error: null,
+  pagination: null,
 }
 
 // Thunk actions
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
-  async (params: ProductFilterParams, { rejectWithValue }) => {
+  async (
+    params: { page?: number; size?: number; filter?: ProductFilterParams | null },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await fetchProductsApi(params)
       return response
@@ -60,18 +66,6 @@ export const fetchFeaturedProducts = createAsyncThunk(
   },
 )
 
-export const fetchProductsByCategory = createAsyncThunk(
-  'products/fetchProductsByCategory',
-  async (categoryId: string, { rejectWithValue }) => {
-    try {
-      const response = await fetchProductsApi({ categoryId })
-      return response
-    } catch (error) {
-      return rejectWithValue(handleApiError(error))
-    }
-  },
-)
-
 const productsSlice = createSlice({
   name: 'products',
   initialState,
@@ -85,7 +79,8 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<Product[]>) => {
         state.loading = false
-        state.products = action.payload
+        state.products = action.payload.data
+        state.pagination = action.payload.pagination
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false
@@ -116,20 +111,6 @@ const productsSlice = createSlice({
         state.featuredProducts = action.payload.data
       })
       .addCase(fetchFeaturedProducts.rejected, (state, action) => {
-        state.loading = false
-        state.error = handleApiError(action.payload)
-      })
-
-      // fetchProductsByCategory
-      .addCase(fetchProductsByCategory.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(fetchProductsByCategory.fulfilled, (state, action: PayloadAction<Product[]>) => {
-        state.loading = false
-        state.products = action.payload
-      })
-      .addCase(fetchProductsByCategory.rejected, (state, action) => {
         state.loading = false
         state.error = handleApiError(action.payload)
       })

@@ -5,6 +5,7 @@ import adminCategoriesReducer from './slice/admin/adminCategoriesSlice'
 import adminProductsReducer from './slice/admin/adminProductsSlice'
 import adminUsersReducer from './slice/admin/adminUsersSlice'
 import authReducer from './slice/authSlice'
+import cartReducer from './slice/cartSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     adminProducts: adminProductsReducer,
     adminUsers: adminUsersReducer,
     auth: authReducer,
+    cart: cartReducer,
   },
 })
 

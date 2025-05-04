@@ -27,10 +27,10 @@ const ManageProductsPage = () => {
       fetchAdminProducts({
         page: currentPage - 1,
         size: itemsPerPage,
-        // filter: {
-        //   search: searchTerm,
-        //   categoryId: selectedCategory || undefined,
-        // },
+        filter: {
+          search: searchTerm,
+          categoryId: selectedCategory || undefined,
+        },
       }),
     )
   }, [dispatch, currentPage, itemsPerPage, searchTerm, selectedCategory])
@@ -191,7 +191,11 @@ const ManageProductsPage = () => {
                           {product.categoryName}
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          {product.isFeatured ? 'Nổi bật' : 'Không'}
+                          <input
+                            type="checkbox"
+                            checked={product.isFeatured}
+                            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {product.numberOfVariants}
