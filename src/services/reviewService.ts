@@ -32,6 +32,26 @@ export const createReviewApi = async (review: ReviewRequest) => {
   }
 }
 
+export const updateReviewApi = async (reviewId: string, review: ReviewRequest) => {
+  try {
+    const response = await api.put(`/reviews/${reviewId}`, review)
+    return response
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update review'
+    throw new Error(errorMessage)
+  }
+}
+
+export const deleteReviewApi = async (reviewId: string) => {
+  try {
+    const response = await api.delete(`/reviews/${reviewId}`)
+    return response
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete review'
+    throw new Error(errorMessage)
+  }
+}
+
 export const checkEligibilityApi = async (params: { userId: string; productId: string }) => {
   try {
     const response = await api.get(`/reviews/eligibility`, {

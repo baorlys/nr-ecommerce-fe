@@ -45,6 +45,10 @@ const ProductDetailPage = () => {
     setSelectedVariant(variant)
   }
 
+  const handleOnRevewSubmit = () => {
+    dispatch(fetchProductBySlug(productSlug || ''))
+  }
+
   const handleAddToCart = () => {
     if (product) {
       dispatch(
@@ -327,7 +331,9 @@ const ProductDetailPage = () => {
             </div>
           )}
 
-          {activeTab === 'reviews' && <ReviewSection product={product} />}
+          {activeTab === 'reviews' && (
+            <ReviewSection product={product} onReviewSubmit={handleOnRevewSubmit} />
+          )}
 
           {activeTab === 'shipping' && <ShippingInfoSection />}
         </div>

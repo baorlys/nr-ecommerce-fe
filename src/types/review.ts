@@ -10,6 +10,7 @@ export interface Review {
 }
 
 export interface ReviewRequest {
+  id?: string | null
   productId: string
   userId: string
   rating: number

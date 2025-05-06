@@ -9,15 +9,17 @@ import Pagination from '../common/Pagination'
 import ReviewFormModal from './ReviewFormModal'
 
 import type { RootState, AppDispatch } from '../../store'
-import { checkEligibility, fetchReviews } from '../../store/slice/reviewSlice'
-import type { ReviewFilterParams } from '../../types/review'
+import { checkEligibility, deleteReview, fetchReviews } from '../../store/slice/reviewSlice'
+import type { Review, ReviewFilterParams } from '../../types/review'
 import type { ProductDetail } from '../../types/product'
+import ConfirmModal from '../common/ConfirmModal'
 
 interface ReviewSectionProps {
   product: ProductDetail
+  onReviewSubmit: () => void
 }
 
-const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
+const ReviewSection: React.FC<ReviewSectionProps> = ({ product, onReviewSubmit }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { reviews, loading, pagination, canReview } = useSelector(
     (state: RootState) => state.reviews,
@@ -25,6 +27,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null)
   const [filters, setFilters] = useState<ReviewFilterParams>({ productId: product.id })
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(5)
@@ -54,13 +58,13 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
   }
 
   const handleModalSubmit = () => {
-    dispatch(
-      fetchReviews({
-        page: currentPage - 1,
-        size: itemsPerPage,
-        filter: filters,
-      }),
-    )
+    onReviewSubmit()
+  }
+
+  const handleDeleteReview = async (reviewId: string) => {
+    await dispatch(deleteReview(reviewId))
+    setSelectedReview(null)
+    onReviewSubmit()
   }
 
   const renderStars = (rating: number) =>
@@ -120,18 +124,44 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
             </div>
 
             <div className="space-y-6">
-              {reviews.map((review) => (
-                <div key={review.id} className="border-b border-gray-200 pb-6">
-                  <div className="mb-2 flex justify-between">
-                    <div className="font-semibold">
-                      {review.user.firstName} {review.user.lastName}
+              {reviews.map((review) => {
+                const isOwnReview = user?.id === review.user.id
+                return (
+                  <div key={review.id} className="border-b border-gray-200 pb-6">
+                    <div className="mb-2 flex justify-between">
+                      <div className="font-semibold">
+                        {review.user.firstName} {review.user.lastName}
+                      </div>
+                      <div className="text-sm text-gray-500">{review.createdOn}</div>
                     </div>
-                    <div className="text-sm text-gray-500">{review.createdOn}</div>
+                    <div className="mb-2 flex">{renderReviewStars(review.rating)}</div>
+                    <p className="text-gray-700">{review.comment}</p>
+
+                    {isOwnReview && (
+                      <div className="mt-2 flex gap-2 text-sm">
+                        <button
+                          onClick={() => {
+                            setSelectedReview(review)
+                            setIsModalOpen(true)
+                          }}
+                          className="text-primary hover:underline"
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedReview(review)
+                            setIsConfirmOpen(true)
+                          }}
+                          className="text-red-500 hover:underline"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <div className="mb-2 flex">{renderReviewStars(review.rating)}</div>
-                  <p className="text-gray-700">{review.comment}</p>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             {/* Pagination */}
@@ -158,6 +188,19 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={() => handleModalSubmit()}
+        review={selectedReview}
+      />
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={() => {
+          handleDeleteReview(selectedReview?.id || '')
+          setIsConfirmOpen(false)
+        }}
+        title="Xóa đánh giá"
+        message="Bạn có chắc chắn muốn xóa đánh giá này?"
       />
     </div>
   )

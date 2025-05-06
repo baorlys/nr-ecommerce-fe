@@ -9,14 +9,15 @@ import * as Yup from 'yup'
 import { FaStar, FaTimes } from 'react-icons/fa'
 import Button from '../common/Button'
 import type { AppDispatch, RootState } from '../../store'
-import { createReview } from '../../store/slice/reviewSlice'
-import type { ReviewRequest } from '../../types/review'
+import { createReview, updateReview } from '../../store/slice/reviewSlice'
+import type { Review, ReviewRequest } from '../../types/review'
 
 interface ReviewFormModalProps {
   productId: string
   isOpen: boolean
   onClose: () => void
   onSubmit: () => void
+  review?: Review | null
 }
 
 const ReviewSchema = Yup.object().shape({
@@ -32,6 +33,7 @@ const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  review,
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { user } = useSelector((state: RootState) => state.auth)
@@ -43,12 +45,16 @@ const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
   const initialValues: ReviewRequest = {
     userId: user?.id || '',
     productId,
-    rating: 0,
-    comment: '',
+    rating: review?.rating || 0,
+    comment: review?.comment || '',
   }
 
   const handleSubmit = async (values: ReviewRequest) => {
-    await dispatch(createReview(values)).unwrap()
+    if (review?.id) {
+      await dispatch(updateReview({ id: review.id, request: values })).unwrap()
+    } else {
+      await dispatch(createReview(values)).unwrap()
+    }
     onSubmit()
     onClose()
   }

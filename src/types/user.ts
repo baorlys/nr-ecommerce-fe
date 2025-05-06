@@ -34,6 +34,7 @@ export interface RefreshTokenResponse {
 }
 
 export interface UserName {
+  id: string
   firstName: string
   lastName: string
 }
