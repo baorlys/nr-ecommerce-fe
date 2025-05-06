@@ -5,17 +5,17 @@ import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaStar, FaCartPlus, FaMinus, FaPlus } from 'react-icons/fa'
 import Button from '../components/common/Button'
-import { fetchProductById } from '../store/slice/productsSlice'
+import { fetchProductBySlug } from '../store/slice/productsSlice'
 // import { addToCart } from '../store/cartSlice'
 import type { RootState, AppDispatch } from '../store'
 import { formatCurrency } from '../utils/format'
 import { ProductVariant } from '../types/product'
-import Review from '../components/ui/Review'
-import ShippingInfo from '../components/ui/ShippingInfo'
+import ReviewSection from '../components/ui/ReviewSection'
+import ShippingInfoSection from '../components/ui/ShippingInfoSection'
 import { addToCart } from '../store/slice/cartSlice'
 
 const ProductDetailPage = () => {
-  const { productId } = useParams()
+  const { productSlug } = useParams()
   const dispatch = useDispatch<AppDispatch>()
 
   const { product, loading } = useSelector((state: RootState) => state.products)
@@ -26,11 +26,11 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
 
   useEffect(() => {
-    if (productId) {
-      dispatch(fetchProductById(productId))
+    if (productSlug) {
+      dispatch(fetchProductBySlug(productSlug))
       window.scrollTo(0, 0)
     }
-  }, [dispatch, productId])
+  }, [dispatch, productSlug])
 
   useEffect(() => {
     setSelectedVariant(product?.variants.find((v) => v.stockQuantity > 0) || null)
@@ -51,6 +51,7 @@ const ProductDetailPage = () => {
         addToCart({
           id: product.id,
           name: product.name,
+          variantName: selectedVariant?.name || product.variants[0].name,
           price: selectedVariant?.price || 0,
           image: product.images[0].imageUrl,
           quantity,
@@ -208,14 +209,18 @@ const ProductDetailPage = () => {
 
           {/* Add to Cart */}
           <div className="mb-6 flex flex-col gap-3 sm:flex-row">
-            <Button
-              variant="cta"
-              size="lg"
-              className="flex flex-1 items-center justify-center gap-2"
-              onClick={handleAddToCart}
-            >
-              <FaCartPlus /> Thêm vào giỏ hàng
-            </Button>
+            {!selectedVariant || selectedVariant.stockQuantity <= 0 ? (
+              <span className="text-xl text-red-500">Sản phẩm tạm hết hàng</span>
+            ) : (
+              <Button
+                variant="cta"
+                size="lg"
+                className="flex flex-1 items-center justify-center gap-2"
+                onClick={handleAddToCart}
+              >
+                <FaCartPlus /> Thêm vào giỏ hàng
+              </Button>
+            )}
           </div>
 
           {/* Product Meta */}
@@ -322,9 +327,9 @@ const ProductDetailPage = () => {
             </div>
           )}
 
-          {activeTab === 'reviews' && <Review product={product} />}
+          {activeTab === 'reviews' && <ReviewSection product={product} />}
 
-          {activeTab === 'shipping' && <ShippingInfo />}
+          {activeTab === 'shipping' && <ShippingInfoSection />}
         </div>
       </div>
     </div>

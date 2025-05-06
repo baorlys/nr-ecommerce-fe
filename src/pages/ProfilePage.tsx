@@ -7,12 +7,8 @@ import * as Yup from 'yup'
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaLock, FaCamera } from 'react-icons/fa'
 import Button from '../components/common/Button'
 import type { RootState, AppDispatch } from '../store'
-import type { FormikHelpers } from '../types/common'
-import { toast } from 'react-toastify'
-import api from '../services/api'
-import { getCurrentUser } from '../store/slice/authSlice'
+import { changePassword, getCurrentUser, updateUserInfo } from '../store/slice/authSlice'
 
-// Định nghĩa kiểu dữ liệu cho form
 interface ProfileFormValues {
   firstName: string
   lastName: string
@@ -26,16 +22,15 @@ interface PasswordFormValues {
   confirmPassword: string
 }
 
-// Validation schema cho thông tin cá nhân
+// Validation schema for profile information
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string().required('Vui lòng nhập họ'),
   lastName: Yup.string().required('Vui lòng nhập tên'),
   email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
   phone: Yup.string().matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ'),
-  address: Yup.string(),
 })
 
-// Validation schema cho mật khẩu
+// Validation schema for password
 const PasswordSchema = Yup.object().shape({
   currentPassword: Yup.string().required('Vui lòng nhập mật khẩu hiện tại'),
   newPassword: Yup.string()
@@ -61,20 +56,13 @@ const ProfilePage = () => {
 
   const handleUpdateProfile = async (
     values: ProfileFormValues,
-    { setSubmitting }: FormikHelpers<ProfileFormValues>,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      // Gọi API để cập nhật thông tin
-      // Trong môi trường thực tế, sẽ sử dụng api.put
-      // await api.put('/auth/profile', values);
-      console.log('Update profile:', values)
-      toast.success('Cập nhật thông tin thành công!')
-
-      // Cập nhật thông tin user trong Redux store
-      dispatch(getCurrentUser())
+      await dispatch(updateUserInfo(values)).unwrap()
+      await dispatch(getCurrentUser()).unwrap()
     } catch (error) {
       console.error('Update profile error:', error)
-      toast.error('Cập nhật thông tin thất bại. Vui lòng thử lại.')
     } finally {
       setSubmitting(false)
     }
@@ -82,19 +70,27 @@ const ProfilePage = () => {
 
   const handleChangePassword = async (
     values: PasswordFormValues,
-    { setSubmitting, resetForm }: FormikHelpers<PasswordFormValues>,
+    {
+      setSubmitting,
+      resetForm,
+    }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      await api.put('/auth/change-password', values)
-      console.log('Change password:', values)
-      toast.success('Đổi mật khẩu thành công!')
+      await dispatch(changePassword(values)).unwrap()
       resetForm()
     } catch (error) {
       console.error('Change password error:', error)
-      toast.error('Đổi mật khẩu thất bại. Vui lòng thử lại.')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  // Define initial values with explicit type
+  const profileInitialValues: ProfileFormValues = {
+    firstName: user.firstName || '',
+    lastName: user.lastName || '',
+    email: user.email || '',
+    phone: user.phone || '',
   }
 
   return (
@@ -106,18 +102,10 @@ const ProfilePage = () => {
             <div className="mb-6 flex flex-col items-center">
               <div className="relative">
                 <div className="mb-2 h-24 w-24 overflow-hidden rounded-full bg-gray-200">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar || '/placeholder.svg'}
-                      alt={`${user.firstName} ${user.lastName}`}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="bg-primary flex h-full w-full items-center justify-center text-2xl font-bold text-white">
-                      {user.firstName.charAt(0)}
-                      {user.lastName.charAt(0)}
-                    </div>
-                  )}
+                  <div className="bg-primary flex h-full w-full items-center justify-center text-2xl font-bold text-white">
+                    {user.firstName.charAt(0)}
+                    {user.lastName.charAt(0)}
+                  </div>
                 </div>
                 <button className="bg-primary absolute right-0 bottom-0 rounded-full p-2 text-white shadow-md">
                   <FaCamera size={14} />
@@ -165,13 +153,8 @@ const ProfilePage = () => {
               <div>
                 <h2 className="mb-6 text-2xl font-bold">Thông tin cá nhân</h2>
 
-                <Formik
-                  initialValues={{
-                    firstName: user.firstName || '',
-                    lastName: user.lastName || '',
-                    email: user.email || '',
-                    phone: user.phone || '',
-                  }}
+                <Formik<ProfileFormValues>
+                  initialValues={profileInitialValues}
                   validationSchema={ProfileSchema}
                   onSubmit={handleUpdateProfile}
                 >
@@ -291,7 +274,7 @@ const ProfilePage = () => {
               <div>
                 <h2 className="mb-6 text-2xl font-bold">Đổi mật khẩu</h2>
 
-                <Formik
+                <Formik<PasswordFormValues>
                   initialValues={{
                     currentPassword: '',
                     newPassword: '',

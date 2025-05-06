@@ -19,7 +19,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalItems,
   pageSize,
 }) => {
-  const indexOfFirstItem = currentPage * pageSize
+  const indexOfFirstItem = (currentPage - 1) * pageSize
   const indexOfLastItem = Math.min(indexOfFirstItem + pageSize, totalItems)
 
   return (

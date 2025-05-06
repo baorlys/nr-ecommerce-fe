@@ -1,4 +1,4 @@
-export default function ShippingInfo() {
+export default function ShippingInfoSection() {
   return (
     <div className="space-y-6">
       <div>

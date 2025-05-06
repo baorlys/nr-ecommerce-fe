@@ -2,7 +2,6 @@ import api from './api'
 import { ApiError } from '../types/common'
 import { API_ERROR_MESSAGES } from '../constants/errorMessage'
 
-import type { UpdateUserRoleRequest } from '../types/user'
 
 export const getAllUsersApi = async (params: { page: number; size: number }) => {
   try {

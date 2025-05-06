@@ -147,11 +147,11 @@ const Header = () => {
 
             <Link to="/gio-hang" className="relative p-2">
               <FaShoppingCart size={20} className="text-textColor hover:text-primary" />
-              {/* {totalItems > 0 && (
+              {totalItems > 0 && (
                 <span className="bg-primary absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
                   {totalItems}
                 </span>
-              )} */}
+              )}
             </Link>
 
             <div className="relative" ref={userDropdownRef}>
