@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter, FaStar } from 'react-icons/fa'
 import Button from '../../components/common/Button'
 import { fetchAdminProducts, deleteProduct } from '../../store/slice/admin/adminProductsSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import type { AppDispatch, RootState } from '../../store'
 import Pagination from '../../components/common/Pagination'
 import ConfirmModal from '../../components/common/ConfirmModal'
+import { fetchCategoriesFlat } from '../../store/slice/admin/adminCategoriesSlice'
 
 const ManageProductsPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { products, pagination, loading } = useSelector((state: RootState) => state.adminProducts)
+  const { categories } = useSelector((state: RootState) => state.adminCategories)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
@@ -24,6 +26,13 @@ const ManageProductsPage = () => {
 
   useEffect(() => {
     dispatch(
+      fetchCategoriesFlat({
+        page: 0,
+        size: 100,
+        filter: {},
+      }),
+    )
+    dispatch(
       fetchAdminProducts({
         page: currentPage - 1,
         size: itemsPerPage,
@@ -34,17 +43,6 @@ const ManageProductsPage = () => {
       }),
     )
   }, [dispatch, currentPage, itemsPerPage, searchTerm, selectedCategory])
-
-  // Danh sách danh mục duy nhất
-  const categories = Array.from(new Set(products.map((product) => product.categoryId))).map(
-    (categoryId) => {
-      const product = products.find((product) => product.categoryId === categoryId)
-      return {
-        id: categoryId,
-        name: product ? product.categoryName : 'Chưa phân loại',
-      }
-    },
-  )
 
   const openConfirmModal = (productId: string) => {
     setSelectedProductId(productId)
@@ -110,7 +108,9 @@ const ManageProductsPage = () => {
               <select
                 className="focus:ring-primary w-full appearance-none rounded-md border border-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:outline-none"
                 value={selectedCategory || ''}
-                onChange={(e) => setSelectedCategory(e.target.value || null)}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value)
+                }}
               >
                 <option value="">Tất cả danh mục</option>
                 {categories.map((category) => (
@@ -195,14 +195,26 @@ const ManageProductsPage = () => {
                             type="checkbox"
                             checked={product.isFeatured}
                             className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            readOnly
                           />
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {product.numberOfVariants}
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          {product.averageRating} ({product.totalReviews})
-                        </td>
+                        {product.averageRating === null ? (
+                          <td className="px-6 py-4 text-sm whitespace-nowrap">Chưa có đánh giá</td>
+                        ) : (
+                          <td className="px-6 py-4 text-sm whitespace-nowrap">
+                            <div className="flex items-center space-x-1">
+                              <FaStar className="text-yellow-500" />
+                              <span className="text-gray-700">
+                                {product.averageRating.toFixed(1)}
+                              </span>
+                            </div>
+                            <span className="text-gray-500">{product.totalReviews} đánh giá</span>
+                          </td>
+                        )}
+
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {new Date(product.createdOn).toLocaleDateString()}
                         </td>

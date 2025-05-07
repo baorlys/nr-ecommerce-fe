@@ -4,6 +4,7 @@ export interface Category {
   slug: string
   description: string
   imageUrl: string
+  parentId?: string // Optional property for parent category
   subCategories?: Category[] // Optional property for subcategories
 }
 
@@ -14,8 +15,8 @@ export interface CategoryFlat {
   description: string
   imageUrl: string
   parentId?: string
-  createdOn: string
-  updatedOn: string
+  createdOn?: string | null
+  updatedOn?: string | null
 }
 
 export interface CategoryRequest {
@@ -23,4 +24,8 @@ export interface CategoryRequest {
   description?: string
   imageUrl: string
   parentId?: string
+}
+
+export interface CategoryFilterParams {
+  search?: string | null
 }

@@ -49,6 +49,8 @@ const Header = () => {
     if (searchQuery.trim()) {
       navigate(`/san-pham?search=${searchQuery}`)
       setIsMenuOpen(false)
+    } else {
+      navigate('/san-pham')
     }
   }
 

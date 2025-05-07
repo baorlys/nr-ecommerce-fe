@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ui/ProductCard'
@@ -10,29 +10,48 @@ import { fetchCategories } from '../store/slice/categoriesSlice'
 import type { RootState, AppDispatch } from '../store'
 import { FaFilter, FaSort } from 'react-icons/fa'
 import { ProductFilterParams } from '../types/product'
+import { CategoryFlat } from '../types/category'
 import Pagination from '../components/common/Pagination'
+import { flattenCategories } from '../utils/convert'
 
 const ProductsPage = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { categoryId } = useParams()
+  const { categorySlug } = useParams()
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')
 
   const { products, pagination, loading, error } = useSelector((state: RootState) => state.products)
   const { categories } = useSelector((state: RootState) => state.categories)
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryId || null)
-  const [sortBy, setSortBy] = useState('newest')
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState('NEWEST')
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000000 })
-
-  const [filters, setFilters] = useState({} as ProductFilterParams)
+  const [filters, setFilters] = useState<ProductFilterParams>({})
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(9)
-
   const [showFilters, setShowFilters] = useState(false)
 
+  // Fetch categories on mount
   useEffect(() => {
     dispatch(fetchCategories())
+  }, [dispatch])
+
+  // Compute categoriesFlat and sync filters when categories or categorySlug change
+  useEffect(() => {
+    const categoriesFlat: CategoryFlat[] = flattenCategories(categories)
+    const currentCategory = categoriesFlat.find((cat) => cat.slug === categorySlug)
+    const categoryIdFromSlug = currentCategory?.id || null
+
+    setSelectedCategoryId(categoryIdFromSlug)
+    setFilters((prev) => ({
+      ...prev,
+      categoryId: categoryIdFromSlug || undefined,
+      search: searchQuery || prev.search,
+    }))
+  }, [categories, categorySlug, searchQuery])
+
+  // Fetch products when filters, page, or itemsPerPage change
+  useEffect(() => {
     dispatch(
       fetchProducts({
         page: currentPage - 1,
@@ -42,15 +61,9 @@ const ProductsPage = () => {
     )
   }, [dispatch, filters, currentPage, itemsPerPage])
 
-  useEffect(() => {
-    if (searchQuery) {
-      setFilters((prev) => ({ ...prev, search: searchQuery }))
-    }
-  }, [searchQuery])
-
   const handleCategoryChange = (catId: string | null) => {
-    setSelectedCategory(catId)
-    setFilters((prev) => ({ ...prev, categoryId: catId || null }))
+    setSelectedCategoryId(catId)
+    setFilters((prev) => ({ ...prev, categoryId: catId || undefined }))
   }
 
   const handleSortChange = (value: 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC') => {
@@ -64,14 +77,20 @@ const ProductsPage = () => {
   }
 
   const resetFilters = () => {
-    setSelectedCategory(categoryId || null)
-    setSortBy('newest')
+    const categoriesFlat: CategoryFlat[] = flattenCategories(categories)
+    const currentCategory = categoriesFlat.find((cat) => cat.slug === categorySlug)
+    const categoryIdFromSlug = currentCategory?.id || null
+
+    setSelectedCategoryId(categoryIdFromSlug)
+    setSortBy('NEWEST')
     setPriceRange({ min: 0, max: 1000000 })
-    dispatch(fetchProducts({}))
+    setFilters({
+      categoryId: categoryIdFromSlug || undefined,
+      search: searchQuery || undefined,
+    })
   }
 
-  // Find the current category name
-  const currentCategory = categories.find((cat) => cat.slug === selectedCategory)
+  const categoriesFlat: CategoryFlat[] = flattenCategories(categories)
 
   return (
     <div className="container-custom h-min-screen py-8">
@@ -102,20 +121,20 @@ const ProductsPage = () => {
                     type="radio"
                     id="all-categories"
                     name="category"
-                    checked={selectedCategory === null}
+                    checked={selectedCategoryId === null}
                     onChange={() => handleCategoryChange(null)}
                     className="mr-2"
                   />
                   <label htmlFor="all-categories">Tất cả sản phẩm</label>
                 </div>
 
-                {categories.map((category) => (
+                {categoriesFlat.map((category) => (
                   <div key={category.id} className="flex items-center">
                     <input
                       type="radio"
                       id={`category-${category.id}`}
                       name="category"
-                      checked={selectedCategory === category.id}
+                      checked={selectedCategoryId === category.id}
                       onChange={() => handleCategoryChange(category.id)}
                       className="mr-2"
                     />
@@ -164,32 +183,6 @@ const ProductsPage = () => {
               </div>
             </div>
 
-            {/* Rating */}
-            {/* <div className="mb-6">
-              <h4 className="mb-2 font-semibold">Đánh giá</h4>
-              <div className="space-y-2">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <div key={rating} className="flex items-center">
-                    <input type="checkbox" id={`rating-${rating}`} className="mr-2" />
-                    <label htmlFor={`rating-${rating}`} className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`h-4 w-4 ${i < rating ? 'text-yellow' : 'text-gray-300'}`}
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                      <span className="ml-1">trở lên</span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div> */}
-
             <div className="flex flex-col gap-2">
               <Button variant="outline" onClick={resetFilters}>
                 Đặt lại
@@ -204,8 +197,8 @@ const ProductsPage = () => {
             <h1 className="mb-2 text-2xl font-bold">
               {searchQuery
                 ? `Kết quả tìm kiếm cho "${searchQuery}"`
-                : currentCategory
-                  ? currentCategory.name
+                : selectedCategoryId
+                  ? categoriesFlat.find((cat) => cat.id === selectedCategoryId)?.name
                   : 'Tất cả sản phẩm'}
             </h1>
 
@@ -224,7 +217,7 @@ const ProductsPage = () => {
                   >
                     <option value="NEWEST">Mới nhất</option>
                     <option value="PRICE_ASC">Giá: Thấp đến cao</option>
-                    <option value="PRICE_DESC">Giá: Cao đến thấp</option>
+                    <option value="PRICE_DESC">Gi hành: Cao đến thấp</option>
                   </select>
                   <FaSort className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400" />
                 </div>

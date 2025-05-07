@@ -33,7 +33,7 @@ function AppRoutes() {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
     dispatch(getCurrentUser())
@@ -53,7 +53,7 @@ function AppRoutes() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="san-pham" element={<ProductsPage />} />
-          <Route path="san-pham/:categoryId" element={<ProductsPage />} />
+          <Route path="san-pham/:categorySlug" element={<ProductsPage />} />
           <Route path="san-pham/chi-tiet/:productSlug" element={<ProductDetailPage />} />
           <Route path="gio-hang" element={<CartPage />} />
           <Route path="thanh-toan" element={<CheckoutPage />} />

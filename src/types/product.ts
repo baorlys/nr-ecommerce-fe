@@ -46,6 +46,7 @@ export interface ProductImage {
 export interface ProductFilterParams {
   search?: string | null
   categoryId?: string | null
+  categorySlug?: string | null
   minPrice?: number | null
   maxPrice?: number | null
   rating?: number | null

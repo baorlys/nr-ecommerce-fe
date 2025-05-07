@@ -1,7 +1,5 @@
 'use client'
 
-import React from 'react'
-
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaFolder } from 'react-icons/fa'
@@ -11,67 +9,39 @@ import { fetchCategoriesFlat, deleteCategory } from '../../store/slice/admin/adm
 import type { RootState, AppDispatch } from '../../store'
 import ConfirmModal from '../../components/common/ConfirmModal'
 import { toast } from 'react-toastify'
+import Pagination from '../../components/common/Pagination'
 
 const ManageCategoriesPage = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { categories, loading } = useSelector((state: RootState) => state.adminCategories)
+  const { categories, loading, pagination } = useSelector(
+    (state: RootState) => state.adminCategories,
+  )
 
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: string } | null>(null)
 
   // Modal state
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    dispatch(fetchCategoriesFlat())
-  }, [dispatch])
-
-  // Lọc danh mục theo tìm kiếm
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-
-  // Sắp xếp danh mục
-  const sortedCategories = React.useMemo(() => {
-    const sortableCategories = [...filteredCategories]
-    if (sortConfig !== null) {
-      sortableCategories.sort((a, b) => {
-        if (a[sortConfig.key as keyof typeof a] < b[sortConfig.key as keyof typeof b]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1
-        }
-        if (a[sortConfig.key as keyof typeof a] > b[sortConfig.key as keyof typeof b]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1
-        }
-        return 0
-      })
-    }
-    return sortableCategories
-  }, [filteredCategories, sortConfig])
-
-  // Phân trang
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = sortedCategories.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(sortedCategories.length / itemsPerPage)
-
-  // Xử lý sắp xếp
-  const requestSort = (key: string) => {
-    let direction = 'ascending'
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending'
-    }
-    setSortConfig({ key, direction })
-  }
+    dispatch(
+      fetchCategoriesFlat({
+        page: currentPage - 1,
+        size: itemsPerPage,
+        filter: {
+          search: searchTerm,
+        },
+      }),
+    )
+  }, [dispatch, currentPage, itemsPerPage, searchTerm])
 
   // Xử lý xóa danh mục
   const handleDeleteCategory = async () => {
     if (selectedCategoryId) {
       try {
         await dispatch(deleteCategory(selectedCategoryId)).unwrap()
-        await dispatch(fetchCategoriesFlat())
         toast.success('Xóa danh mục thành công')
         closeConfirmModal()
       } catch (error) {
@@ -128,22 +98,13 @@ const ManageCategoriesPage = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-                      onClick={() => requestSort('id')}
-                    >
+                    <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                       ID
                     </th>
-                    <th
-                      className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-                      onClick={() => requestSort('name')}
-                    >
+                    <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                       Tên danh mục
                     </th>
-                    <th
-                      className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
-                      onClick={() => requestSort('slug')}
-                    >
+                    <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                       Slug
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
@@ -162,7 +123,7 @@ const ManageCategoriesPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {currentItems.map((category) => (
+                  {categories.map((category) => (
                     <tr key={category.id} className="hover:bg-gray-50">
                       <td className="text-primary px-6 py-4 text-sm font-medium whitespace-nowrap">
                         #{category.id}
@@ -228,43 +189,16 @@ const ManageCategoriesPage = () => {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-gray-500">
-                  Hiển thị {indexOfFirstItem + 1}-
-                  {Math.min(indexOfLastItem, sortedCategories.length)} trong{' '}
-                  {sortedCategories.length} danh mục
-                </div>
-                <div className="flex space-x-1">
-                  <button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Trước
-                  </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`rounded-md px-3 py-1 ${
-                        currentPage === page
-                          ? 'bg-primary text-white'
-                          : 'border border-gray-300 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="rounded-md border border-gray-300 px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Sau
-                  </button>
-                </div>
-              </div>
+            {pagination && (
+              <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                hasPrevious={pagination.hasPrevious}
+                hasNext={pagination.hasNext}
+                onPageChange={(page) => setCurrentPage(page)}
+                totalItems={pagination.totalItems}
+                pageSize={pagination.size}
+              />
             )}
           </>
         )}
