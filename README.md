@@ -26,17 +26,19 @@ This is the frontend of an e-commerce application built with **React**, **TypeSc
 
 ## Folder Structure
 
-src/
-├── assets/ # Static assets like images and icons
-├── components/ # Reusable UI components
-├── constants/ # Application-wide constants
-├── mock/ # Mock data for testing
-├── pages/ # Page-level components
-├── routes/ # Application routin
-├── services/ # API service calls
-├── store/ # Redux store and slices
-├── types/ # TypeScript type definitions
-├── utils/ # Utility functions
+  ```sh
+  src/
+  ├── assets/ # Static assets like images and icons
+  ├── components/ # Reusable UI components
+  ├── constants/ # Application-wide constants
+  ├── mock/ # Mock data for testing
+  ├── pages/ # Page-level components
+  ├── routes/ # Application routin
+  ├── services/ # API service calls
+  ├── store/ # Redux store and slices
+  ├── types/ # TypeScript type definitions
+  ├── utils/ # Utility functions
+  ```
 
 ## Getting Started
 
@@ -57,8 +59,14 @@ src/
 
 2. Install dependencies:
 
+```sh
 npm install
+
+```
 
 3. Start the development server:
 
+```sh
 npm run dev
+
+```
