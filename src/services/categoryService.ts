@@ -1,6 +1,4 @@
-import { CategoryRequest } from '../types/category'
-import { ApiError } from '../types/common'
-import { API_ERROR_MESSAGES } from '../constants/errorMessage'
+import { CategoryFilterParams, CategoryRequest } from '../types/category'
 import api from './api'
 
 // API functions
@@ -9,11 +7,8 @@ export const fetchCategoriesApi = async () => {
     const response = await api.get('/categories')
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) ||
-      'Lấy danh sách danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }
 
@@ -22,23 +17,28 @@ export const fetchCategoryByIdApi = async (id: string) => {
     const response = await api.get(`/categories/${id}`)
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Lấy danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }
 
-export const fetchCategoriesFlatApi = async () => {
+export const fetchCategoriesFlatApi = async (params: {
+  page: number
+  size: number
+  filter?: CategoryFilterParams | null
+}) => {
   try {
-    const response = await api.get('admin/categories')
+    const response = await api.get('admin/categories', {
+      params: {
+        page: params.page,
+        size: params.size,
+        ...(params.filter ? params.filter : {}),
+      },
+    })
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) ||
-      'Lấy danh sách danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }
 
@@ -47,12 +47,8 @@ export const createCategoryApi = async (request: CategoryRequest) => {
     const response = await api.post('admin/categories', request)
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    console.log(apiError)
-
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Tạo danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }
 
@@ -61,12 +57,8 @@ export const updateCategoryApi = async (id: string, request: CategoryRequest) =>
     const response = await api.put(`admin/categories/${id}`, request)
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    console.log(apiError)
-
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Cập nhật danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }
 
@@ -75,9 +67,7 @@ export const deleteCategoryByIdApi = async (id: string) => {
     const response = await api.delete(`admin/categories/${id}`)
     return response.data
   } catch (error) {
-    const apiError = error.response?.data as ApiError
-    const vietnameseMessage =
-      (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Xóa danh mục thất bại'
-    throw new Error(vietnameseMessage)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch admin products'
+    throw new Error(errorMessage)
   }
 }

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import 'react-toastify/dist/ReactToastify.css'
 
 import MainLayout from './components/layout/MainLayout'
 import AdminLayout from './components/layout/AdminLayout'
@@ -25,15 +24,16 @@ import AdminUsersPage from './pages/admin/ManageUsersPage'
 import ProductFormPage from './pages/admin/ProductFormPage'
 import CategoryFormPage from './pages/admin/CategoryFormPage'
 
-import PrivateRoute from './components/common/PrivateRoute'
+import PrivateRoute from './routes/PrivateRoute'
 import { getCurrentUser } from './store/slice/authSlice'
 import type { AppDispatch, RootState } from './store'
+import PublicRoute from './routes/PublicRoute'
 
 function AppRoutes() {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const location = useLocation()
-  const user = useSelector((state: RootState) => state.auth.user)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
     dispatch(getCurrentUser())
@@ -53,12 +53,26 @@ function AppRoutes() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="san-pham" element={<ProductsPage />} />
-          <Route path="san-pham/:categoryId" element={<ProductsPage />} />
-          <Route path="san-pham/chi-tiet/:productId" element={<ProductDetailPage />} />
+          <Route path="san-pham/:categorySlug" element={<ProductsPage />} />
+          <Route path="san-pham/chi-tiet/:productSlug" element={<ProductDetailPage />} />
           <Route path="gio-hang" element={<CartPage />} />
           <Route path="thanh-toan" element={<CheckoutPage />} />
-          <Route path="dang-nhap" element={<LoginPage />} />
-          <Route path="dang-ky" element={<RegisterPage />} />
+          <Route
+            path="dang-nhap"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="dang-ky"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
           <Route path="khong-co-quyen" element={<ForbiddenPage />} />
 
           <Route

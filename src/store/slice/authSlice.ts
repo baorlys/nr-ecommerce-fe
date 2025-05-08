@@ -1,8 +1,28 @@
 import { handleApiError } from './../../utils/apiErrorHandler'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { toast } from 'react-toastify'
-import type { AuthState, LoginRequest, RegisterRequest, User } from '../../types/user'
-import { loginApi, registerApi, logoutApi, getCurrentUserApi } from '../../services/authService'
+import type {
+  ChangePasswordRequest,
+  LoginRequest,
+  RegisterRequest,
+  UpdateUserInfoRequest,
+  User,
+} from '../../types/user'
+import {
+  loginApi,
+  registerApi,
+  logoutApi,
+  getCurrentUserApi,
+  updateUserInfoApi,
+  changePasswordApi,
+} from '../../services/authService'
+
+export interface AuthState {
+  user: User | null
+  loading: boolean
+  error: string | null
+  isAuthenticated: boolean
+}
 
 const initialState: AuthState = {
   user: null,
@@ -54,10 +74,36 @@ export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: string
       const response = await getCurrentUserApi()
       return response
     } catch (error) {
-      return rejectWithValue(error)
+      return rejectWithValue(handleApiError(error).message)
     }
   },
 )
+
+export const updateUserInfo = createAsyncThunk<
+  User,
+  UpdateUserInfoRequest,
+  { rejectValue: string }
+>('auth/updateUserInfo', async (userData, { rejectWithValue }) => {
+  try {
+    const response = await updateUserInfoApi(userData)
+    return response
+  } catch (error) {
+    return rejectWithValue(handleApiError(error).message)
+  }
+})
+
+export const changePassword = createAsyncThunk<
+  void,
+  ChangePasswordRequest,
+  { rejectValue: string }
+>('auth/changePassword', async (passwordRequest, { rejectWithValue }) => {
+  try {
+    const response = await changePasswordApi(passwordRequest)
+    return response
+  } catch (error) {
+    return rejectWithValue(handleApiError(error).message)
+  }
+})
 
 const authSlice = createSlice({
   name: 'auth',
@@ -121,6 +167,35 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload || 'Lấy thông tin user thất bại'
         state.isAuthenticated = false
+      })
+
+      // updateUserInfo
+      .addCase(updateUserInfo.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(updateUserInfo.fulfilled, (state, action) => {
+        state.loading = false
+        state.user = action.payload
+        toast.success('Cập nhật thông tin thành công!')
+      })
+      .addCase(updateUserInfo.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload || 'Cập nhật thông tin thất bại'
+      })
+
+      // changePassword
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loading = false
+        toast.success('Đổi mật khẩu thành công!')
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload || 'Đổi mật khẩu thất bại'
       })
   },
 })

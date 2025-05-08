@@ -1,3 +1,4 @@
+import { CategoryFilterParams } from './../../../types/category'
 import { CategoryFlat, CategoryRequest } from '../../../types/category'
 
 import { handleApiError } from '../../../utils/apiErrorHandler'
@@ -10,12 +11,14 @@ import {
   createCategoryApi,
   updateCategoryApi,
 } from '../../../services/categoryService'
+import type { PagedResponseSuccess, Pagination } from '../../../types/common'
 
 interface AdminCategoriesState {
   categories: CategoryFlat[]
   category: CategoryRequest | null
   loading: boolean
   error: string | null
+  pagination: Pagination | null
 }
 
 const initialState: AdminCategoriesState = {
@@ -23,13 +26,17 @@ const initialState: AdminCategoriesState = {
   category: {} as CategoryRequest,
   loading: false,
   error: null,
+  pagination: null,
 }
 
 export const fetchCategoriesFlat = createAsyncThunk(
   'admin/categories/fetchCategoriesFlat',
-  async (_, { rejectWithValue }) => {
+  async (
+    params: { page: number; size: number; filter?: CategoryFilterParams | null },
+    { rejectWithValue },
+  ) => {
     try {
-      const response = await fetchCategoriesFlatApi()
+      const response = await fetchCategoriesFlatApi(params)
       return response
     } catch (error) {
       return rejectWithValue(handleApiError(error))
@@ -96,10 +103,14 @@ const adminCategoriesSlice = createSlice({
         state.loading = true
         state.error = null
       })
-      .addCase(fetchCategoriesFlat.fulfilled, (state, action: PayloadAction<CategoryFlat[]>) => {
-        state.loading = false
-        state.categories = action.payload.data
-      })
+      .addCase(
+        fetchCategoriesFlat.fulfilled,
+        (state, action: PayloadAction<PagedResponseSuccess<CategoryFlat>>) => {
+          state.loading = false
+          state.categories = action.payload.data
+          state.pagination = action.payload.pagination
+        },
+      )
       .addCase(fetchCategoriesFlat.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload as string

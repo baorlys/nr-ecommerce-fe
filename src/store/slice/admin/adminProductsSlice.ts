@@ -5,7 +5,7 @@ import type {
   ProductFilterParams,
   ProductRequest,
 } from '../../../types/product'
-import type { PagedResponseSuccess } from '../../../types/common'
+import type { PagedResponseSuccess, Pagination } from '../../../types/common'
 import {
   fetchProductByIdApi,
   createProductApi,
@@ -14,20 +14,14 @@ import {
   fetchAdminProductsApi,
 } from '../../../services/productService'
 import { toast } from 'react-toastify'
+import { handleApiError } from '../../../utils/apiErrorHandler'
 
 interface AdminProductsState {
   products: AdminProductResponse[]
   product: ProductDetail | null
   loading: boolean
   error: string | null
-  pagination: {
-    page: number
-    size: number
-    totalItems: number
-    totalPages: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  pagination: Pagination | null
 }
 
 const initialState: AdminProductsState = {
@@ -48,8 +42,8 @@ export const fetchAdminProducts = createAsyncThunk(
     try {
       const response = await fetchAdminProductsApi(params)
       return response
-    } catch (error: any) {
-      return rejectWithValue(error.message)
+    } catch (error) {
+      return rejectWithValue(handleApiError(error))
     }
   },
 )
@@ -60,8 +54,8 @@ export const fetchProductById = createAsyncThunk(
     try {
       const response = await fetchProductByIdApi(id)
       return response
-    } catch (error: any) {
-      return rejectWithValue(error.message)
+    } catch (error) {
+      return rejectWithValue(handleApiError(error))
     }
   },
 )
@@ -72,8 +66,8 @@ export const createProduct = createAsyncThunk(
     try {
       const response = await createProductApi(productData)
       return response
-    } catch (error: any) {
-      return rejectWithValue(error.message)
+    } catch (error) {
+      return rejectWithValue(handleApiError(error))
     }
   },
 )
@@ -84,8 +78,8 @@ export const updateProduct = createAsyncThunk(
     try {
       const response = await updateProductApi(id, productData)
       return response
-    } catch (error: any) {
-      return rejectWithValue(error.message)
+    } catch (error) {
+      return rejectWithValue(handleApiError(error))
     }
   },
 )
@@ -96,8 +90,8 @@ export const deleteProduct = createAsyncThunk(
     try {
       await deleteProductApi(id)
       return id
-    } catch (error: any) {
-      return rejectWithValue(error.message)
+    } catch (error) {
+      return rejectWithValue(handleApiError(error))
     }
   },
 )

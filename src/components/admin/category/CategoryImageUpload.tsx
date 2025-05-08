@@ -5,8 +5,7 @@ import type React from 'react'
 import { ErrorMessage } from 'formik'
 import { FaImage, FaTimes } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
-import { uploadMedia } from '../../../store/slice/mediaSlice'
-import { toast } from 'react-toastify'
+import { deleteMedia, uploadMedia } from '../../../store/slice/mediaSlice'
 import type { AppDispatch } from '../../../store'
 
 interface CategoryImageUploadProps {
@@ -34,17 +33,16 @@ const CategoryImageUpload = ({
       try {
         const response: any = await dispatch(uploadMedia(formData)).unwrap()
         setFieldValue('imageUrl', response)
-        toast.success('Tải lên hình ảnh thành công')
       } catch (error) {
         console.error('Error uploading image:', error)
-        toast.error('Lỗi khi tải ảnh lên. Vui lòng thử lại.')
       } finally {
         setUploadingImage(false)
       }
     }
   }
 
-  const removeImage = () => {
+  const removeImage = async () => {
+    await dispatch(deleteMedia(imageUrl)).unwrap()
     setFieldValue('imageUrl', '')
   }
 

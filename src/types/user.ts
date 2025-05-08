@@ -13,17 +13,10 @@ export interface Role {
   id: string
   name: string
 }
-export interface AuthState {
-  user: User | null
-  loading: boolean
-  error: string | null
-  isAuthenticated: boolean
-}
 
 export interface LoginRequest {
   email: string
   password: string
-  rememberMe?: boolean
 }
 
 export interface RegisterRequest {
@@ -37,4 +30,22 @@ export interface RegisterRequest {
 export interface RefreshTokenResponse {
   accessToken: string
   refreshToken: string
+}
+
+export interface UserName {
+  id: string
+  firstName: string
+  lastName: string
+}
+
+export interface UpdateUserInfoRequest {
+  firstName?: string
+  lastName?: string
+  phone?: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
 }

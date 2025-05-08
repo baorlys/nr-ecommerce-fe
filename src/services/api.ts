@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -8,45 +8,48 @@ const api = axios.create({
   withCredentials: true,
 })
 
+// Flag and queue to manage token refresh
 let isRefreshing = false
-let failedQueue: any[] = []
 
-const processQueue = (error: any, token: null = null) => {
-  failedQueue.forEach((prom) => {
+interface FailedRequest {
+  resolve: (value?: unknown) => void
+  reject: (reason?: any) => void
+}
+
+let failedQueue: FailedRequest[] = []
+
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
-      prom.reject(error)
+      reject(error)
     } else {
-      prom.resolve()
+      resolve(token)
     }
   })
   failedQueue = []
 }
 
+// Request interceptor
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     return config
   },
-  (error: AxiosError): Promise<AxiosError> => {
-    return Promise.reject(error)
-  },
+  (error: AxiosError): Promise<AxiosError> => Promise.reject(error),
 )
 
+// Response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config
+  (response: AxiosResponse) => response,
+  async (error: AxiosError): Promise<any> => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         })
-          .then(() => {
-            return api(originalRequest)
-          })
-          .catch((err) => {
-            return Promise.reject(err)
-          })
+          .then(() => api(originalRequest))
+          .catch((err) => Promise.reject(err))
       }
 
       originalRequest._retry = true
@@ -55,12 +58,10 @@ api.interceptors.response.use(
       try {
         await api.post('/auth/refresh-token')
         processQueue(null)
-
         return api(originalRequest)
-      } catch (err) {
-        processQueue(err)
-        // Optional: redirect to login page or clear user session
-        return Promise.reject(err)
+      } catch (refreshError) {
+        processQueue(refreshError)
+        return Promise.reject(refreshError)
       } finally {
         isRefreshing = false
       }

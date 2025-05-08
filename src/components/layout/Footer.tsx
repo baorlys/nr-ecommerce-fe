@@ -8,8 +8,21 @@ import {
   FaMapMarkerAlt,
 } from 'react-icons/fa'
 import Logo from '../common/Logo'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../store'
+import { useEffect } from 'react'
+import { fetchCategories } from '../../store/slice/categoriesSlice'
 
 export default function Footer() {
+  const dispatch = useDispatch<AppDispatch>()
+  const { categories } = useSelector((state: RootState) => state.categories)
+
+  useEffect(() => {
+    if (categories.length == 0) {
+      dispatch(fetchCategories())
+    }
+  }, [dispatch, categories.length])
+
   return (
     <footer className="bg-primary pt-10 pb-6 text-white">
       <div className="container-custom">
@@ -87,26 +100,13 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-bold">Danh mục sản phẩm</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/san-pham/kho-ga" className="hover:text-yellow text-sm">
-                  Khô gà
-                </Link>
-              </li>
-              <li>
-                <Link to="/san-pham/kho-bo" className="hover:text-yellow text-sm">
-                  Khô bò
-                </Link>
-              </li>
-              <li>
-                <Link to="/san-pham/do-an-vat" className="hover:text-yellow text-sm">
-                  Đồ ăn vặt
-                </Link>
-              </li>
-              <li>
-                <Link to="/san-pham/do-uong" className="hover:text-yellow text-sm">
-                  Đồ uống
-                </Link>
-              </li>
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <Link to={`/san-pham/${category.slug}`} className="hover:text-yellow text-sm">
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
