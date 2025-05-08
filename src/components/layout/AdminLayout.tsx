@@ -7,9 +7,7 @@ import {
   FaTachometerAlt,
   FaBoxes,
   FaListUl,
-  FaShoppingCart,
   FaUsers,
-  FaCog,
   FaSignOutAlt,
   FaBars,
   FaTimes,
@@ -28,16 +26,16 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     dispatch(logout())
-    navigate('/dang-nhap')
+    navigate('/login')
   }
 
   const menuItems = [
     { path: '/admin', icon: <FaTachometerAlt />, label: 'Dashboard' },
-    { path: '/admin/san-pham', icon: <FaBoxes />, label: 'Sản phẩm' },
-    { path: '/admin/danh-muc', icon: <FaListUl />, label: 'Danh mục' },
-    { path: '/admin/don-hang', icon: <FaShoppingCart />, label: 'Đơn hàng' },
-    { path: '/admin/nguoi-dung', icon: <FaUsers />, label: 'Người dùng' },
-    { path: '/admin/cai-dat', icon: <FaCog />, label: 'Cài đặt' },
+    { path: '/admin/products', icon: <FaBoxes />, label: 'Sản phẩm' },
+    { path: '/admin/categories', icon: <FaListUl />, label: 'Danh mục' },
+    // { path: '/admin/don-hang', icon: <FaShoppingCart />, label: 'Đơn hàng' },
+    { path: '/admin/users', icon: <FaUsers />, label: 'Người dùng' },
+    // { path: '/admin/cai-dat', icon: <FaCog />, label: 'Cài đặt' },
   ]
 
   return (

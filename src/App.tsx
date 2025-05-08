@@ -52,13 +52,13 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="san-pham" element={<ProductsPage />} />
-          <Route path="san-pham/:categorySlug" element={<ProductsPage />} />
-          <Route path="san-pham/chi-tiet/:productSlug" element={<ProductDetailPage />} />
-          <Route path="gio-hang" element={<CartPage />} />
-          <Route path="thanh-toan" element={<CheckoutPage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="products/:categorySlug" element={<ProductsPage />} />
+          <Route path="products/detail/:productSlug" element={<ProductDetailPage />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="checkout" element={<CheckoutPage />} />
           <Route
-            path="dang-nhap"
+            path="login"
             element={
               <PublicRoute>
                 <LoginPage />
@@ -66,17 +66,17 @@ function AppRoutes() {
             }
           />
           <Route
-            path="dang-ky"
+            path="register"
             element={
               <PublicRoute>
                 <RegisterPage />
               </PublicRoute>
             }
           />
-          <Route path="khong-co-quyen" element={<ForbiddenPage />} />
+          <Route path="forbidden" element={<ForbiddenPage />} />
 
           <Route
-            path="tai-khoan"
+            path="profile"
             element={
               <PrivateRoute>
                 <ProfilePage />
@@ -96,13 +96,13 @@ function AppRoutes() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="san-pham" element={<AdminProductsPage />} />
-          <Route path="san-pham/them-moi" element={<ProductFormPage />} />
-          <Route path="san-pham/chinh-sua/:productId" element={<ProductFormPage />} />
-          <Route path="danh-muc" element={<AdminCategoriesPage />} />
-          <Route path="danh-muc/them-moi" element={<CategoryFormPage />} />
-          <Route path="danh-muc/chinh-sua/:categoryId" element={<CategoryFormPage />} />
-          <Route path="nguoi-dung" element={<AdminUsersPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="products/add" element={<ProductFormPage />} />
+          <Route path="products/edit/:productId" element={<ProductFormPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+          <Route path="categories/add" element={<CategoryFormPage />} />
+          <Route path="categories/edit/:categoryId" element={<CategoryFormPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

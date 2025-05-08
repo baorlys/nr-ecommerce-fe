@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ui/ProductCard'
 import Button from '../components/common/Button'
 import { fetchProducts } from '../store/slice/productsSlice'
@@ -217,7 +217,7 @@ const ProductsPage = () => {
                   >
                     <option value="NEWEST">Mới nhất</option>
                     <option value="PRICE_ASC">Giá: Thấp đến cao</option>
-                    <option value="PRICE_DESC">Gi hành: Cao đến thấp</option>
+                    <option value="PRICE_DESC">Giá: Cao đến thấp</option>
                   </select>
                   <FaSort className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400" />
                 </div>

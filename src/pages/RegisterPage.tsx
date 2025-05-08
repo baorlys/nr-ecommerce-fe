@@ -14,7 +14,6 @@ interface RegisterFormValues {
   email: string
   password: string
   confirmPassword: string
-  agreeTerms: boolean
 }
 
 const RegisterSchema = Yup.object().shape({
@@ -27,7 +26,6 @@ const RegisterSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Mật khẩu không khớp')
     .required('Vui lòng xác nhận mật khẩu'),
-  agreeTerms: Yup.boolean().oneOf([true], 'Bạn phải đồng ý với điều khoản dịch vụ'),
 })
 
 const RegisterPage = () => {
@@ -44,7 +42,7 @@ const RegisterPage = () => {
     setAuthError(null)
     try {
       await dispatch(register(values)).unwrap()
-      navigate('/dang-nhap')
+      navigate('/login')
     } catch (error) {
       setAuthError(error)
     } finally {
@@ -65,7 +63,6 @@ const RegisterPage = () => {
               email: '',
               password: '',
               confirmPassword: '',
-              agreeTerms: false,
             }}
             validationSchema={RegisterSchema}
             onSubmit={handleSubmit}
@@ -186,15 +183,6 @@ const RegisterPage = () => {
                   />
                 </div>
 
-                <div className="flex items-start space-x-2">
-                  <Field type="checkbox" name="agreeTerms" id="agreeTerms" className="mt-1" />
-                  <label htmlFor="agreeTerms" className="text-sm text-gray-700">
-                    Tôi đồng ý với{' '}
-                    <span className="text-primary cursor-pointer underline">
-                      điều khoản dịch vụ
-                    </span>
-                  </label>
-                </div>
                 <ErrorMessage name="agreeTerms" component="div" className="text-sm text-red-500" />
 
                 <Button type="submit" variant="primary" size="lg" fullWidth disabled={isSubmitting}>
@@ -204,7 +192,7 @@ const RegisterPage = () => {
                 <div className="text-center">
                   <p className="text-sm text-gray-600">
                     Đã có tài khoản?{' '}
-                    <Link to="/dang-nhap" className="text-primary font-medium hover:underline">
+                    <Link to="/login" className="text-primary font-medium hover:underline">
                       Đăng nhập
                     </Link>
                   </p>

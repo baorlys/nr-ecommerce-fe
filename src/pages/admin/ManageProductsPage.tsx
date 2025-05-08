@@ -60,7 +60,7 @@ const ManageProductsPage = () => {
         await dispatch(deleteProduct(selectedProductId)).unwrap()
         dispatch(
           fetchAdminProducts({
-            page: currentPage,
+            page: currentPage - 1,
             size: itemsPerPage,
             filter: {
               search: searchTerm,
@@ -79,7 +79,7 @@ const ManageProductsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold text-gray-800">Quản lý sản phẩm</h1>
-        <Link to="/admin/san-pham/them-moi">
+        <Link to="/admin/products/add">
           <Button variant="primary" className="flex items-center">
             <FaPlus className="mr-2" /> Thêm sản phẩm mới
           </Button>
@@ -224,7 +224,7 @@ const ManageProductsPage = () => {
                         <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                           <div className="flex justify-end space-x-2">
                             <Link
-                              to={`/admin/san-pham/chinh-sua/${product.id}`}
+                              to={`/admin/products/edit/${product.id}`}
                               className="text-blue-600 hover:text-blue-900"
                             >
                               <FaEdit />

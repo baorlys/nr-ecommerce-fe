@@ -95,7 +95,7 @@ const ProductDetailPage = () => {
           Trang chủ
         </a>
         <span className="mx-2">/</span>
-        <a href="/san-pham" className="hover:text-primary text-gray-500">
+        <a href="/products" className="hover:text-primary text-gray-500">
           Sản phẩm
         </a>
         <span className="mx-2">/</span>
@@ -232,7 +232,7 @@ const ProductDetailPage = () => {
             <div className="mb-2 flex">
               <span className="w-32 font-medium">Danh mục:</span>
               <a
-                href={`/san-pham/${product.category.slug}`}
+                href={`/products/${product.category.slug}`}
                 className="text-primary hover:underline"
               >
                 {product.category.name}

@@ -20,12 +20,12 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, requiredRole }) => {
 
   // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
   if (!isAuthenticated) {
-    return <Navigate to="/dang-nhap" state={{ from: location }} replace />
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   // Nếu yêu cầu role cụ thể và user không có role đó
   if (requiredRole && role !== requiredRole) {
-    return <Navigate to="/khong-co-quyen" replace />
+    return <Navigate to="/forbidden" replace />
   }
 
   // Nếu đã đăng nhập và có quyền truy cập, hiển thị nội dung

@@ -15,7 +15,10 @@ export const loginApi = async (userData: LoginRequest): Promise<User> => {
     const response = await api.post('/auth/login', userData)
     return response.data
   } catch (error) {
+    console.log(error)
+
     const apiError = error.response?.data as ApiError
+
     const vietnameseMessage =
       (apiError?.message && API_ERROR_MESSAGES[apiError.message]) || 'Đăng nhập thất bại'
 

@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { FaSearch, FaTrash, FaUserPlus, FaFilter } from 'react-icons/fa'
-import Button from '../../components/common/Button'
+import {  FaTrash} from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { formatDate } from '../../utils/format'
 import { AppDispatch, RootState } from '../../store'
@@ -12,10 +11,10 @@ import Pagination from '../../components/common/Pagination'
 const ManageUsersPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { users, pagination, loading } = useSelector((state: RootState) => state.adminUsers)
-  const [searchTerm, setSearchTerm] = useState('')
+  // const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
-  const [roleFilter, setRoleFilter] = useState<string | null>(null)
+  // const [roleFilter, setRoleFilter] = useState<string | null>(null)
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>(undefined)
@@ -44,7 +43,7 @@ const ManageUsersPage = () => {
       await dispatch(deleteUser(selectedUserId)).unwrap()
       dispatch(
         fetchUsers({
-          page: currentPage,
+          page: currentPage - 1,
           size: itemsPerPage,
         }),
       )
@@ -56,13 +55,10 @@ const ManageUsersPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold text-gray-800">Quản lý người dùng</h1>
-        <Button variant="primary" className="flex items-center">
-          <FaUserPlus className="mr-2" /> Thêm người dùng mới
-        </Button>
       </div>
 
       <div className="rounded-lg bg-white p-6 shadow-md">
-        <div className="mb-6 flex flex-col gap-4 md:flex-row">
+        {/* <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <FaSearch className="text-gray-400" />
@@ -91,7 +87,7 @@ const ManageUsersPage = () => {
               </select>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -117,6 +113,9 @@ const ManageUsersPage = () => {
                     </th>
                     <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                       Ngày tạo
+                    </th>
+                    <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                      Trạng thái
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">
                       Thao tác
@@ -161,14 +160,27 @@ const ManageUsersPage = () => {
                       <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                         {user.createdOn ? formatDate(user.createdOn) : '-'}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${
+                            user.deleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                          }`}
+                        >
+                          {user.deleted ? 'Đã xóa' : 'Đang hoạt động'}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <div className="flex justify-end space-x-2">
-                          <button
-                            onClick={() => openConfirmModal(user.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <FaTrash />
-                          </button>
+                          {!user.deleted ? (
+                            <button
+                              onClick={() => openConfirmModal(user.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <FaTrash />
+                            </button>
+                          ) : (
+                            <div></div>
+                          )}
                         </div>
                       </td>
                     </tr>

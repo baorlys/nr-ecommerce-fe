@@ -10,7 +10,7 @@ const slides = [
     title: 'Khô Gà Lá Chanh',
     description: 'Đặc sản miền Tây Nam Bộ, vị ngon đậm đà',
     buttonText: 'Mua ngay',
-    buttonLink: '/san-pham/kho-ga',
+    buttonLink: '/products/kho-ga',
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ const slides = [
     title: 'Khô Bò Miếng',
     description: 'Thơm ngon, bổ dưỡng, ăn vặt lý tưởng',
     buttonText: 'Khám phá',
-    buttonLink: '/san-pham/kho-bo',
+    buttonLink: '/products/kho-bo',
   },
   {
     id: 3,
@@ -26,7 +26,7 @@ const slides = [
     title: 'Combo Đồ Ăn Vặt',
     description: 'Tiết kiệm hơn với combo đa dạng',
     buttonText: 'Xem ngay',
-    buttonLink: '/san-pham/combo',
+    buttonLink: '/products/combo',
   },
 ]
 
@@ -45,7 +45,6 @@ const HeroSlider = () => {
     setCurrentSlide(index)
   }
 
-  // Placeholder images for development
   const placeholderImages = [
     'https://placehold.co/1200x500/E53935/FFFFFF?text=Khô+Gà+Lá+Chanh',
     'https://placehold.co/1200x500/FBC02D/212121?text=Khô+Bò+Miếng',

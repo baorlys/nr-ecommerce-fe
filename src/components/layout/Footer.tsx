@@ -74,23 +74,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/san-pham" className="hover:text-yellow text-sm">
+                <Link to="/products" className="hover:text-yellow text-sm">
                   Sản phẩm
-                </Link>
-              </li>
-              <li>
-                <Link to="/gioi-thieu" className="hover:text-yellow text-sm">
-                  Giới thiệu
-                </Link>
-              </li>
-              <li>
-                <Link to="/lien-he" className="hover:text-yellow text-sm">
-                  Liên hệ
-                </Link>
-              </li>
-              <li>
-                <Link to="/chinh-sach" className="hover:text-yellow text-sm">
-                  Chính sách
                 </Link>
               </li>
             </ul>
@@ -102,7 +87,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {categories.map((category) => (
                 <li key={category.id}>
-                  <Link to={`/san-pham/${category.slug}`} className="hover:text-yellow text-sm">
+                  <Link to={`/products/${category.slug}`} className="hover:text-yellow text-sm">
                     {category.name}
                   </Link>
                 </li>
@@ -116,7 +101,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <FaMapMarkerAlt className="mt-1 mr-2 flex-shrink-0" />
-                <span className="text-sm">123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh</span>
+                <span className="text-sm">Etown 3</span>
               </li>
               <li className="flex items-center">
                 <FaPhone className="mr-2 flex-shrink-0" />

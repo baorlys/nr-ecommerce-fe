@@ -8,7 +8,7 @@ interface CategoryCardProps {
 
 const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
   return (
-    <Link to={`/san-pham/${category.slug}`}>
+    <Link to={`/products/${category.slug}`}>
       <div className="group relative overflow-hidden rounded-lg">
         <div className="h-40 overflow-hidden">
           <img

@@ -8,7 +8,6 @@ const api = axios.create({
   withCredentials: true,
 })
 
-// Flag and queue to manage token refresh
 let isRefreshing = false
 
 interface FailedRequest {
@@ -29,7 +28,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = []
 }
 
-// Request interceptor
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     return config
@@ -37,33 +35,42 @@ api.interceptors.request.use(
   (error: AxiosError): Promise<AxiosError> => Promise.reject(error),
 )
 
-// Response interceptor
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError): Promise<any> => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Check if it's a 401 error and prevent retrying on wrong credentials
+    if (error.response?.status === 401) {
+      const errorMessage = error.response?.data?.message || ''
+      // If the error is due to invalid credentials, don't try to refresh the token
+      if (errorMessage === 'Invalid email or password') {
+        return Promise.reject(error)
+      }
+
+      if (!originalRequest._retry) {
+        originalRequest._retry = true
+        isRefreshing = true
+
+        try {
+          await api.post('/auth/refresh-token')
+          processQueue(null)
+          return api(originalRequest)
+        } catch (refreshError) {
+          processQueue(refreshError)
+          return Promise.reject(refreshError)
+        } finally {
+          isRefreshing = false
+        }
+      }
+
+      // If refresh token is being processed, queue the request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         })
           .then(() => api(originalRequest))
           .catch((err) => Promise.reject(err))
-      }
-
-      originalRequest._retry = true
-      isRefreshing = true
-
-      try {
-        await api.post('/auth/refresh-token')
-        processQueue(null)
-        return api(originalRequest)
-      } catch (refreshError) {
-        processQueue(refreshError)
-        return Promise.reject(refreshError)
-      } finally {
-        isRefreshing = false
       }
     }
 

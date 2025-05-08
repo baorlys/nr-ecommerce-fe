@@ -31,7 +31,13 @@ const ProductFormPage = () => {
   const isEditMode = Boolean(productId)
 
   useEffect(() => {
-    dispatch(fetchCategoriesFlat())
+    dispatch(
+      fetchCategoriesFlat({
+        page: 1 - 1,
+        size: 10,
+        filter: null,
+      }),
+    )
 
     if (isEditMode && productId) {
       dispatch(fetchProductById(productId))
@@ -73,7 +79,7 @@ const ProductFormPage = () => {
       } else {
         await dispatch(createProduct(productData)).unwrap()
       }
-      navigate('/admin/san-pham')
+      navigate('/admin/products')
     } catch (error) {
       console.error('Error saving product:', error)
       throw error
@@ -93,7 +99,7 @@ const ProductFormPage = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/admin/san-pham')}
+            onClick={() => navigate('/admin/products')}
             className="text-gray-600 hover:text-gray-900"
           >
             <FaArrowLeft size={18} />
@@ -111,7 +117,7 @@ const ProductFormPage = () => {
           isEditMode={isEditMode}
           productId={productId}
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/admin/san-pham')}
+          onCancel={() => navigate('/admin/products')}
         />
       </div>
     </div>

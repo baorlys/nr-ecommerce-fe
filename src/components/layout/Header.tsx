@@ -16,9 +16,10 @@ import {
 import type { RootState, AppDispatch } from '../../store'
 import { fetchCategories } from '../../store/slice/categoriesSlice'
 import Logo from '../common/Logo'
-import { Category } from '../../types/category'
 import { logout } from '../../store/slice/authSlice'
 import { FaUserPen } from 'react-icons/fa6'
+import CategoryItem from '../ui/CategoryItem'
+import MobileCategoryItem from '../ui/MobileCategoryItem'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -47,10 +48,10 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/san-pham?search=${searchQuery}`)
+      navigate(`/products?search=${searchQuery}`)
       setIsMenuOpen(false)
     } else {
-      navigate('/san-pham')
+      navigate('/products')
     }
   }
 
@@ -147,7 +148,7 @@ const Header = () => {
               </button>
             </form>
 
-            <Link to="/gio-hang" className="relative p-2">
+            <Link to="/cart" className="relative p-2">
               <FaShoppingCart size={20} className="text-textColor hover:text-primary" />
               {totalItems > 0 && (
                 <span className="bg-primary absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white">
@@ -162,7 +163,7 @@ const Header = () => {
                 className="p-2 focus:outline-none"
               >
                 {!user ? (
-                  <Link to="/dang-nhap">
+                  <Link to="/login">
                     <FaUser size={20} className="text-textColor hover:text-primary" />
                   </Link>
                 ) : (
@@ -179,18 +180,11 @@ const Header = () => {
                     <p className="truncate text-xs text-gray-500">{user.email}</p>
                   </div>
                   <Link
-                    to="/tai-khoan"
+                    to="/profile"
                     className="block flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setIsUserDropdownOpen(false)}
                   >
                     <FaUserPen className="mr-2" /> Thông tin tài khoản
-                  </Link>
-                  <Link
-                    to="/don-hang"
-                    className="block flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsUserDropdownOpen(false)}
-                  >
-                    <FaShoppingCart className="mr-2" /> Đơn hàng của tôi
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -272,7 +266,7 @@ const Header = () => {
 
               <div className="flex space-x-4">
                 <Link
-                  to="/gio-hang"
+                  to="/cart"
                   className="text-textColor hover:text-primary flex items-center space-x-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -296,21 +290,14 @@ const Header = () => {
                     </div>
                   </div>
                   <Link
-                    to="/tai-khoan"
+                    to="/profile"
                     className="text-textColor hover:text-primary flex items-center space-x-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <FaUserCircle size={20} />
                     <span>Thông tin tài khoản</span>
                   </Link>
-                  <Link
-                    to="/don-hang"
-                    className="text-textColor hover:text-primary flex items-center space-x-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <FaShoppingCart size={20} />
-                    <span>Đơn hàng của tôi</span>
-                  </Link>
+
                   <button
                     onClick={handleLogout}
                     className="flex w-full items-center space-x-2 text-left text-red-600 hover:text-red-700"
@@ -321,7 +308,7 @@ const Header = () => {
                 </div>
               ) : (
                 <Link
-                  to="/dang-nhap"
+                  to="/login"
                   className="text-textColor hover:text-primary flex items-center space-x-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -334,120 +321,6 @@ const Header = () => {
         )}
       </div>
     </header>
-  )
-}
-
-// Component cho danh mục desktop
-interface CategoryItemProps {
-  category: Category
-  onClose: () => void
-}
-
-const CategoryItem: React.FC<CategoryItemProps> = ({ category, onClose }) => {
-  const [isHovered, setIsHovered] = useState(false)
-  const hasSubCategories = category.subCategories && category.subCategories.length > 0
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Link
-        to={`/san-pham/${category.slug}`}
-        className="text-textColor hover:bg-primary flex w-full items-center justify-between px-4 py-2 text-sm hover:text-white"
-        onClick={onClose}
-      >
-        <span>{category.name}</span>
-        {hasSubCategories && (
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 5l7 7-7 7"
-            ></path>
-          </svg>
-        )}
-      </Link>
-
-      {hasSubCategories && isHovered && (
-        <div className="absolute top-0 left-full z-10 ml-0.5 w-48 rounded-md bg-white py-1 shadow-lg">
-          {(category.subCategories ?? []).map((subCategory: Category) => (
-            <CategoryItem key={subCategory.id} category={subCategory} onClose={onClose} />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Component cho danh mục trên mobile
-interface MobileCategoryItemProps {
-  category: Category
-  onClick: () => void
-  level: number
-}
-
-const MobileCategoryItem: React.FC<MobileCategoryItemProps> = ({ category, onClick, level }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const hasSubCategories = category.subCategories && category.subCategories.length > 0
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Link
-          to={`/san-pham/${category.slug}`}
-          className={`text-textColor hover:text-primary ${level > 0 ? 'ml-4 text-sm' : 'font-medium'}`}
-          onClick={onClick}
-        >
-          {category.name}
-        </Link>
-        {hasSubCategories && (
-          <button
-            className="p-1 text-gray-500"
-            onClick={(e) => {
-              e.preventDefault()
-              setIsOpen(!isOpen)
-            }}
-          >
-            <svg
-              className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180 transform' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {isOpen && hasSubCategories && (
-        <div className="space-y-2 pl-4">
-          {(category.subCategories ?? []).map((subCategory: Category) => (
-            <MobileCategoryItem
-              key={subCategory.id}
-              category={subCategory}
-              onClick={onClick}
-              level={level + 1}
-            />
-          ))}
-        </div>
-      )}
-    </div>
   )
 }
 

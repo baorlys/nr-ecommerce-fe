@@ -28,7 +28,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
   //     }),
   //   )
   // }
-  const linkToDetail = `/san-pham/chi-tiet/${product.slug}`
+  const linkToDetail = `/products/detail/${product.slug}`
 
   return (
     <div className="overflow-hidden rounded-lg bg-white pb-5 shadow-md transition-transform hover:scale-105">

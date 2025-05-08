@@ -28,7 +28,7 @@ const CategoryFormPage = () => {
   const isEditMode = Boolean(categoryId)
 
   useEffect(() => {
-    dispatch(fetchCategoriesFlat())
+    dispatch(fetchCategoriesFlat({ page: 1 - 1, size: 10, filter: null }))
     if (isEditMode && categoryId) {
       dispatch(fetchCategoryById(categoryId))
     } else {
@@ -70,7 +70,7 @@ const CategoryFormPage = () => {
         await dispatch(createCategory(categoryData)).unwrap()
       }
 
-      navigate('/admin/danh-muc')
+      navigate('/admin/categories')
     } catch (error) {
       console.log(error)
     } finally {
@@ -79,7 +79,7 @@ const CategoryFormPage = () => {
   }
 
   const handleCancel = () => {
-    navigate('/admin/danh-muc')
+    navigate('/admin/categories')
   }
 
   return (

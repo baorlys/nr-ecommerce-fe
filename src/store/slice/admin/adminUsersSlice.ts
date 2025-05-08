@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/tool
 import { User } from '../../../types/user'
 import { Pagination } from '../../../types/common'
 import { PagedResponseSuccess } from '../../../types/common'
+import { toast } from 'react-toastify'
 
 interface AdminUsersState {
   users: User[]
@@ -52,6 +53,7 @@ const adminUsersSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true
         state.error = null
@@ -65,14 +67,17 @@ const adminUsersSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+
+      // Delete user
       .addCase(deleteUser.pending, (state) => {
         state.loading = true
         state.error = null
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.loading = false
-        const userId = action.meta.arg // Lấy userId từ meta.arg của action
+        const userId = action.meta.arg
         state.users = state.users.filter((user) => user.id !== userId)
+        toast.warn('Xóa người dùng thành công')
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false

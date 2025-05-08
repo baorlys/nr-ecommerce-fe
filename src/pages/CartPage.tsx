@@ -44,7 +44,7 @@ const CartPage = () => {
           <div className="mb-4 text-6xl">🛒</div>
           <h2 className="mb-4 text-2xl font-bold">Giỏ hàng của bạn đang trống</h2>
           <p className="mb-8 text-gray-600">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
-          <Link to="/san-pham">
+          <Link to="/products">
             <Button variant="primary" size="lg">
               Tiếp tục mua sắm
             </Button>
@@ -187,7 +187,7 @@ const CartPage = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <Link to="/san-pham" className="text-primary flex items-center hover:underline">
+            <Link to="/products" className="text-primary flex items-center hover:underline">
               <FaArrowLeft className="mr-2" /> Tiếp tục mua sắm
             </Link>
             <Button variant="outline" onClick={handleClearCart}>

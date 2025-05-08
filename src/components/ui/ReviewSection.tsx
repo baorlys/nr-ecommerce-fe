@@ -51,7 +51,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ product, onReviewSubmit }
 
   const handleOpenModal = () => {
     if (!isAuthenticated) {
-      window.location.href = `/dang-nhap?returnUrl=${encodeURIComponent(window.location.pathname)}`
+      window.location.href = `/login?returnUrl=${encodeURIComponent(window.location.pathname)}`
       return
     }
     setIsModalOpen(true)

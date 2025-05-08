@@ -7,6 +7,7 @@ export interface User {
   phone?: string
   createdOn: string
   updatedOn: string
+  deleted: boolean
 }
 
 export interface Role {

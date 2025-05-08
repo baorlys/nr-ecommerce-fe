@@ -34,7 +34,7 @@ export const fetchProductByIdApi = async (id: string) => {
 
 export const fetchProductBySlugApi = async (slug: string) => {
   try {
-    const response = await api.get(`/products/slug/${slug}`)
+    const response = await api.get(`/products/bySlug/${slug}`)
     return response.data
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch product by slug'

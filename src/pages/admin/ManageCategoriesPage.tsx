@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchCategoriesFlat, deleteCategory } from '../../store/slice/admin/adminCategoriesSlice'
 import type { RootState, AppDispatch } from '../../store'
 import ConfirmModal from '../../components/common/ConfirmModal'
-import { toast } from 'react-toastify'
 import Pagination from '../../components/common/Pagination'
 
 const ManageCategoriesPage = () => {
@@ -42,11 +41,9 @@ const ManageCategoriesPage = () => {
     if (selectedCategoryId) {
       try {
         await dispatch(deleteCategory(selectedCategoryId)).unwrap()
-        toast.success('Xóa danh mục thành công')
         closeConfirmModal()
       } catch (error) {
         console.error('Failed to delete category:', error)
-        toast.error('Lỗi khi xóa danh mục. Vui lòng thử lại.')
       }
     }
   }
@@ -65,7 +62,7 @@ const ManageCategoriesPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold text-gray-800">Quản lý danh mục</h1>
-        <Link to="/admin/danh-muc/them-moi">
+        <Link to="/admin/categories/add">
           <Button variant="primary" className="flex items-center">
             <FaPlus className="mr-2" /> Thêm danh mục mới
           </Button>
@@ -169,7 +166,7 @@ const ManageCategoriesPage = () => {
                       <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <div className="flex justify-end space-x-2">
                           <Link
-                            to={`/admin/danh-muc/chinh-sua/${category.id}`}
+                            to={`/admin/categories/edit/${category.id}`}
                             className="text-blue-600 hover:text-blue-900"
                           >
                             <FaEdit />

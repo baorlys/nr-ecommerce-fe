@@ -39,7 +39,9 @@ export const login = createAsyncThunk<User, LoginRequest, { rejectValue: string 
       const response = await loginApi(userData)
       return response
     } catch (error) {
-      return rejectWithValue(handleApiError(error).message)
+      console.log(error)
+
+      return rejectWithValue(error.message)
     }
   },
 )
@@ -74,7 +76,7 @@ export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: string
       const response = await getCurrentUserApi()
       return response
     } catch (error) {
-      return rejectWithValue(handleApiError(error).message)
+      return rejectWithValue(error.message)
     }
   },
 )
