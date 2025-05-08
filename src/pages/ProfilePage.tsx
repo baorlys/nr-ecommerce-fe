@@ -12,7 +12,6 @@ import { changePassword, getCurrentUser, updateUserInfo } from '../store/slice/a
 interface ProfileFormValues {
   firstName: string
   lastName: string
-  email: string
   phone: string
 }
 
@@ -26,7 +25,6 @@ interface PasswordFormValues {
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string().required('Vui lòng nhập họ'),
   lastName: Yup.string().required('Vui lòng nhập tên'),
-  email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
   phone: Yup.string().matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ'),
 })
 
@@ -89,7 +87,6 @@ const ProfilePage = () => {
   const profileInitialValues: ProfileFormValues = {
     firstName: user.firstName || '',
     lastName: user.lastName || '',
-    email: user.email || '',
     phone: user.phone || '',
   }
 
@@ -222,9 +219,8 @@ const ProfilePage = () => {
                           <Field
                             type="email"
                             name="email"
-                            id="email"
-                            className="focus:ring-primary w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:outline-none"
-                            placeholder="Nhập email"
+                            className="w-full rounded-md border border-gray-300 bg-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:outline-none"
+                            placeholder={user.email}
                             disabled
                           />
                           <div className="absolute top-0 left-0 flex h-full items-center pl-3 text-gray-500">

@@ -96,7 +96,7 @@ export const createProductApi = async (product: ProductRequest) => {
 
 export const updateProductApi = async (id: string, product: ProductRequest) => {
   try {
-    const response = await api.post(`/admin/products/${id}`, product)
+    const response = await api.put(`/admin/products/${id}`, product)
     return response.data
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to update product'

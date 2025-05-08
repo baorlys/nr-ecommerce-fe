@@ -15,7 +15,6 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string()
     .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
     .required('Vui lòng nhập mật khẩu'),
-  rememberMe: Yup.boolean(),
 })
 
 interface LoginFormValues {
@@ -54,7 +53,6 @@ const LoginPage = () => {
             initialValues={{
               email: '',
               password: '',
-              rememberMe: false,
             }}
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
@@ -110,17 +108,7 @@ const LoginPage = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Field
-                      type="checkbox"
-                      name="rememberMe"
-                      id="rememberMe"
-                      className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
-                    />
-                    <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
-                      Ghi nhớ đăng nhập
-                    </label>
-                  </div>
+                  <div className="flex items-center"></div>
                   <div className="text-sm">
                     <Link to="/quen-mat-khau" className="text-primary hover:underline">
                       Quên mật khẩu?
