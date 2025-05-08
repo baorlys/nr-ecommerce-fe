@@ -59,14 +59,14 @@ This is the frontend of an e-commerce application built with **React**, **TypeSc
 
 2. Install dependencies:
 
-```sh
-npm install
+  ```sh
+  npm install
 
-```
+  ```
 
 3. Start the development server:
 
-```sh
-npm run dev
+  ```sh
+  npm run dev
 
-```
+  ```
