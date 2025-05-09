@@ -52,7 +52,7 @@ This is the frontend of an e-commerce application built with **React**, **TypeSc
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-username/ecommerce-fe.git
+   git clone https://github.com/baorlys/nr-ecommerce-fe.git
    cd ecommerce-fe
 
    ```
